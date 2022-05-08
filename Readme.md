@@ -1,7 +1,7 @@
 # Проект «Киноман»
 
 * Студент: [Stepan Nikiforov](https://up.htmlacademy.ru/ecmascript/17/user/165513).
-* Наставник: `Неизвестно`.
+* Наставник: [Иван Кривонос](https://htmlacademy.ru/profile/id1311037).
 
 ---
 
