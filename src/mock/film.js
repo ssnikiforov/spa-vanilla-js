@@ -1,5 +1,4 @@
-import { getRandomNumber, getRandomInteger, getRandomValuesFromArray } from '../utils.js';
-import dayjs from 'dayjs';
+import { getRandomNumber, getRandomInteger, getRandomValuesFromArray, getRandomDate } from '../utils.js';
 
 const names = [
   'Tom Ford',
@@ -64,11 +63,7 @@ const generateReleaseInfo = () => {
   const maxYearsGap = -100;
 
   return {
-    date: dayjs()
-      .add(getRandomInteger(maxYearsGap, 0), 'year')
-      .subtract(getRandomInteger(maxMothsGap, 0), 'month')
-      .subtract(getRandomInteger(maxDaysGap, 0), 'day')
-      .toISOString(),
+    date: getRandomDate(maxYearsGap, maxMothsGap, maxDaysGap),
     releaseCountry: getRandomValuesFromArray(countries)
   };
 };

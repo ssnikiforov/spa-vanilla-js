@@ -1,4 +1,6 @@
 // source: https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
+import dayjs from 'dayjs';
+
 const getRandomNumber = (a = 0, b = 1) => {
   const lower = Math.min(a, b);
   const upper = Math.max(a, b);
@@ -30,4 +32,12 @@ const getRandomValuesFromArray = (arr, maxQuantity = 1) => {
     : values;
 };
 
-export { getRandomNumber, getRandomInteger, getRandomValuesFromArray };
+const getRandomDate = (maxYearsGap, maxMothsGap, maxDaysGap) => {
+  return dayjs()
+    .add(getRandomInteger(maxYearsGap, 0), 'year')
+    .subtract(getRandomInteger(maxMothsGap, 0), 'month')
+    .subtract(getRandomInteger(maxDaysGap, 0), 'day')
+    .toISOString();
+};
+
+export { getRandomNumber, getRandomInteger, getRandomValuesFromArray, getRandomDate };
