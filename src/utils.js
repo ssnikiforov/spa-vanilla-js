@@ -1,3 +1,4 @@
+// source: https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
 const getRandomNumber = (a = 0, b = 1) => {
   const lower = Math.min(a, b);
   const upper = Math.max(a, b);
@@ -5,6 +6,7 @@ const getRandomNumber = (a = 0, b = 1) => {
   return (Math.random() * (upper - lower) + lower).toFixed(1);
 };
 
+// source: https://stackoverflow.com/questions/1527803/generating-random-whole-numbers-in-javascript-in-a-specific-range
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
