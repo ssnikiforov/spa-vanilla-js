@@ -1,21 +1,13 @@
-import { getRandomNumber, getRandomInteger, getRandomValuesFromArray, getRandomDate } from '../utils.js';
+import {
+  getRandomNumber,
+  getRandomInteger,
+  getRandomValuesFromArray,
+  getRandomDate,
+  getRandomText
+} from '../utils.js';
+import { names, genres, FilmConsts } from '../const.js';
 
-const names = [
-  'Tom Ford',
-  'Takeshi Kitano',
-  'Morgan Freeman',
-  'Bob Shneider',
-  'John Bo',
-  'Kitao Makao',
-];
-
-const genres = [
-  'Comedy',
-  'Action',
-  'Drama',
-  'Thriller',
-  'Musical',
-];
+const MAX_YEARS_GAP = -100;
 
 const generateTitle = () => {
   const titles = [
@@ -31,7 +23,7 @@ const generateTitle = () => {
 
 const generateRating = () => getRandomNumber(0, 9);
 
-const generateAgeRating = () => getRandomInteger(0, 18);
+const generateAgeRating = () => getRandomInteger(0, FilmConsts.MAX_AGE_RATING);
 
 // можно было реализовать через чтение содержимого директории (модуль ноды 'fs'), но не стал добавлять для удобства проверяющего
 const generatePosterPath = () => {
@@ -58,30 +50,10 @@ const generateReleaseInfo = () => {
     'France',
   ];
 
-  const maxDaysGap = -30;
-  const maxMothsGap = -12;
-  const maxYearsGap = -100;
-
   return {
-    date: getRandomDate(maxYearsGap, maxMothsGap, maxDaysGap),
-    releaseCountry: getRandomValuesFromArray(countries)
+    date: getRandomDate(MAX_YEARS_GAP),
+    releaseCountry: getRandomValuesFromArray(countries),
   };
-};
-
-const generateRuntime = () => {
-  const minRuntime = 30;
-  const maxRuntime = 250;
-
-  return getRandomInteger(minRuntime, maxRuntime);
-};
-
-const generateDescription = () => {
-  const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
-
-  const loremArr = lorem.split('.').map(s => s.trim());
-  const res = getRandomValuesFromArray(loremArr, 3);
-
-  return `${Array.isArray(res) ? res.join('. ').trim() : res}.`;
 };
 
 export const generateFilm = () => ({
@@ -94,7 +66,7 @@ export const generateFilm = () => ({
   writers: getRandomValuesFromArray(names, 3),
   actors: getRandomValuesFromArray(names, 5),
   release: generateReleaseInfo(),
-  runtime: generateRuntime(),
+  runtime: getRandomInteger(FilmConsts.MIN_RUNTIME, FilmConsts.MAX_RUNTIME),
   genre: getRandomValuesFromArray(genres, genres),
-  description: generateDescription(),
+  description: getRandomText(),
 });
