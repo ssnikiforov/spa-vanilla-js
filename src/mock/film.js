@@ -37,7 +37,7 @@ const generatePosterPath = () => {
     'the-man-with-the-golden-arm.jpg',
   ];
 
-  return `images/posters/${getRandomValuesFromArray(posters)}`;
+  return `./images/posters/${getRandomValuesFromArray(posters)}`;
 };
 
 const generateReleaseInfo = () => {

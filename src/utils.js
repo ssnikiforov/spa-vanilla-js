@@ -1,10 +1,12 @@
 import dayjs from 'dayjs';
-import { names, DayJsGaps, Emojis } from './const';
+import { DayJsGaps } from './const';
 
 const getRandomText = () => {
   const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
 
-  const loremArr = lorem.split('.').map(s => s.trim());
+  const loremArr = lorem.split('.')
+    .map(s => s.trim())
+    .filter(v => v.length > 0);
   const res = getRandomValuesFromArray(loremArr, 3);
 
   return `${Array.isArray(res) ? res.join('. ').trim() : res}.`;
@@ -51,10 +53,29 @@ const getRandomDate = (maxYearsGap = DayJsGaps.YEARS,
     .toISOString();
 };
 
+const getLimitedText = (string, maxLength = 140) => {
+  if (string.length < maxLength) {
+    return string;
+  }
+
+  return `${string.substring(0, maxLength - 1)}\u2026`;
+};
+
+const humanizeReleaseDate = (date) => dayjs(date).format('YYYY')
+const humanizeRuntime = (runtime) => {
+  const hours = Math.floor(runtime / 60)
+  const minutes = runtime - hours * 60
+
+  return hours ? `${hours}h ${minutes}m` : `${minutes}m`
+}
+
 export {
   getRandomNumber,
   getRandomInteger,
   getRandomValuesFromArray,
   getRandomDate,
   getRandomText,
+  getLimitedText,
+  humanizeReleaseDate,
+  humanizeRuntime
 };
