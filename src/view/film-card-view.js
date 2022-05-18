@@ -1,7 +1,7 @@
 import { createElement } from '../render.js';
 import { getLimitedText, humanizeReleaseDate, humanizeRuntime } from '../utils';
 
-const filmsCardTemplate = (film) => {
+const filmsCardTemplate = (film, comments) => {
   const {
     title,
     alternativeTitle,
@@ -15,7 +15,11 @@ const filmsCardTemplate = (film) => {
     runtime,
     genre,
     description
-  } = film
+  } = film;
+
+  const prularizeCommentsPhrase = (comments) => {
+    return `${comments.length} ${comments.length === 1 ? `comment` : `comments`}`;
+  };
 
   return `<article class="film-card">
     <a class="film-card__link">
@@ -28,7 +32,7 @@ const filmsCardTemplate = (film) => {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
-      <span class="film-card__comments">5 comments</span>
+      <span class="film-card__comments">${prularizeCommentsPhrase(comments)}</span>
     </a>
     <div class="film-card__controls">
       <button class="film-card__controls-item film-card__controls-item--add-to-watchlist" type="button">Add to watchlist</button>
@@ -36,15 +40,16 @@ const filmsCardTemplate = (film) => {
       <button class="film-card__controls-item film-card__controls-item--favorite" type="button">Mark as favorite</button>
     </div>
   </article>`;
-}
+};
 
 export default class FilmCardView {
-  constructor(film) {
+  constructor (film, comments) {
     this.film = film;
+    this.comments = comments;
   }
 
   getTemplate () {
-    return filmsCardTemplate(this.film);
+    return filmsCardTemplate(this.film, this.comments);
   }
 
   getElement () {
