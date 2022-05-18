@@ -61,13 +61,17 @@ const getLimitedText = (string, maxLength = 140) => {
   return `${string.substring(0, maxLength - 1)}\u2026`;
 };
 
-const humanizeReleaseDate = (date) => dayjs(date).format('YYYY')
+const humanizeReleaseDate = (date) => dayjs(date).format('YYYY');
 const humanizeRuntime = (runtime) => {
-  const hours = Math.floor(runtime / 60)
-  const minutes = runtime - hours * 60
+  const hours = Math.floor(runtime / 60);
+  const minutes = runtime - hours * 60;
 
-  return hours ? `${hours}h ${minutes}m` : `${minutes}m`
-}
+  return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
+};
+
+const prularizeCommentsPhrase = (comments) => {
+  return `${comments.length} ${comments.length === 1 ? `comment` : `comments`}`;
+};
 
 export {
   getRandomNumber,
@@ -77,5 +81,6 @@ export {
   getRandomText,
   getLimitedText,
   humanizeReleaseDate,
-  humanizeRuntime
+  humanizeRuntime,
+  prularizeCommentsPhrase
 };

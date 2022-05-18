@@ -4,6 +4,7 @@ import FilmsShowMoreView from '../view/films-show-more-view';
 import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
 import CommentsModel from '../model/comments-model';
+import UserDetailsModel from '../model/user-details-model';
 
 export default class FilmsPresenter {
   init = (mainContainer, filmsModel) => {
@@ -18,7 +19,12 @@ export default class FilmsPresenter {
 
     this.films.map(film => {
       const commentsModel = new CommentsModel();
-      render(new FilmCardView(film, commentsModel.getComments()), filmsListContainerEl);
+      const userDetailsModel = new UserDetailsModel();
+
+      const userDetails = userDetailsModel.getUserDetails();
+      const comments = [...commentsModel.getComments()];
+
+      render(new FilmCardView(film, userDetails, comments), filmsListContainerEl);
     });
 
     render(new FilmsShowMoreView(), filmsListContainerEl);
