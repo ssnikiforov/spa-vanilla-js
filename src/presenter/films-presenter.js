@@ -17,7 +17,7 @@ export default class FilmsPresenter {
     render(new FilmsListContainerView(), filmsContainerEl);
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
 
-    this.films.map(film => {
+    this.films.forEach(film => {
       const commentsModel = new CommentsModel();
       const userDetailsModel = new UserDetailsModel();
 
