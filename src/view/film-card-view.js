@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import { createElement } from '../render';
 import { getLimitedText, humanizeReleaseDate, humanizeRuntime, prularizeCommentsPhrase } from '../utils';
 
 const filmsCardTemplate = (film, userDetails, comments) => {

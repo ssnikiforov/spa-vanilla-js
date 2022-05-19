@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import { createElement } from '../render';
 
 const mainNavigationTemplate = () =>
   `<nav class="main-navigation">

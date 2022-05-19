@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import { createElement } from '../render';
 
 const commentCardTemplate = ({ text, author, date, img, imgAlt }) =>
   `<li class="film-details__comment">
