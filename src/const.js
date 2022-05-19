@@ -21,6 +21,13 @@ const DayJsGaps = {
   YEARS: -3,
 };
 
+const DayDiffs = {
+  TODAY: 0,
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+};
+
 const Emojis = {
   SMILE: 'smile',
   SLEEPING: 'sleeping',
@@ -38,6 +45,6 @@ const ProfileRatings = {
   NOVICE: 1,
   FAN: 11,
   MOVIE_BUFF: 21,
-}
+};
 
-export { names, genres, DayJsGaps, Emojis, FilmConsts, ProfileRatings };
+export { names, genres, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs };

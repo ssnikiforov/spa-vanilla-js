@@ -6,7 +6,7 @@ import FilmCardView from '../view/film-card-view';
 import CommentsModel from '../model/comments-model';
 import UserDetailsModel from '../model/user-details-model';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
-import { getTwoMaxValuesWithIdsFromMap } from '../utils';
+import { getTwoMaxValuesWithIdsFromMap, getCommentsByIds } from '../utils';
 
 const getTopRatedFilmsIds = (filmsWithMeta) => {
   const filmIdAndTotalRatingMap = new Map();
@@ -25,11 +25,9 @@ const getMostCommentedFilmsIds = (filmsWithMeta) => {
 };
 
 export default class FilmsPresenter {
-  getCommentsByIds = (ids) => ids.map(id => this.comments[id]);
-
   init = (mainContainer, filmsWithMeta, comments) => {
-    this.films = Array.from(filmsWithMeta.values())
-    this.comments = Array.from(comments.values())
+    this.films = Array.from(filmsWithMeta.values());
+    this.comments = Array.from(comments.values());
 
     // render container
     render(new FilmsContainerView(), mainContainer);
@@ -40,7 +38,7 @@ export default class FilmsPresenter {
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
 
     this.films.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
-      render(new FilmCardView(film, userDetails, this.getCommentsByIds(commentsIds)), filmsListContainerEl);
+      render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), filmsListContainerEl);
     });
 
     // render show more
@@ -57,7 +55,7 @@ export default class FilmsPresenter {
 
     const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.films).map(index => this.films[index]);
     twoTopRatedFilmsWithMeta.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
-      render(new FilmCardView(film, userDetails, this.getCommentsByIds(commentsIds)), topRatedListEl);
+      render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), topRatedListEl);
     });
 
     // render two most commented films
@@ -66,7 +64,7 @@ export default class FilmsPresenter {
 
     const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.films).map(index => this.films[index]);
     twoMostCommentedFilmsWithMeta.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
-      render(new FilmCardView(film, userDetails, this.getCommentsByIds(commentsIds)), mostCommentedListEl);
+      render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), mostCommentedListEl);
     });
   };
 }

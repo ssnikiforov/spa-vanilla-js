@@ -12,6 +12,6 @@ export const generateComment = () => ({
   id: id++,
   author: getRandomValuesFromArray(names),
   comment: getRandomText(),
-  date: getRandomDate(1),
+  date: getRandomDate(0, 2, 6),
   emotion: generateEmoji(),
 });

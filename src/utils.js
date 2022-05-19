@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { DayJsGaps, ProfileRatings } from './const';
+import { DayDiffs, DayJsGaps, ProfileRatings } from './const';
 
 const getRandomText = () => {
   const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
@@ -61,7 +61,35 @@ const getLimitedText = (string, maxLength = 140) => {
   return `${string.substring(0, maxLength - 1)}\u2026`;
 };
 
-const humanizeReleaseDate = (date) => dayjs(date).format('YYYY');
+const humanizeReleaseDate = (date, isFullFormat = false) => {
+  return isFullFormat ? dayjs(date).format('D MMMM YYYY') : dayjs(date).format('YYYY');
+};
+
+const humanizeCommentDate = (commentDate) => {
+  let commentDateString = '';
+  const diffTimeInDays = dayjs().diff(commentDate, 'day');
+
+  switch (true) {
+    case (diffTimeInDays > DayDiffs.THREE):
+      commentDateString = dayjs(commentDate).format('YYYY/MM/D H:m');
+      break;
+    case (diffTimeInDays === DayDiffs.THREE):
+      commentDateString = `${DayDiffs.THREE} days ago`;
+      break;
+    case (diffTimeInDays === DayDiffs.TWO):
+      commentDateString = `${DayDiffs.TWO} days ago`;
+      break;
+    case (diffTimeInDays === DayDiffs.ONE):
+      commentDateString = `${DayDiffs.ONE} day ago`;
+      break;
+    case (diffTimeInDays === DayDiffs.TODAY):
+      commentDateString = 'Today';
+      break;
+  }
+
+  return commentDateString;
+};
+
 const humanizeRuntime = (runtime) => {
   const hours = Math.floor(runtime / 60);
   const minutes = runtime - hours * 60;
@@ -124,6 +152,17 @@ const getProfileRatingName = (watchedFilmsCount) => {
   return profileRatingName;
 };
 
+const getCommentsByIds = (ids, comments) => {
+  let res = [];
+  if (comments instanceof Array) {
+    res = ids.map(id => comments[id]);
+  } else if (comments instanceof Map) {
+    res = ids.map(id => comments.get(id));
+  }
+
+  return res;
+};
+
 export {
   getRandomNumber,
   getRandomInteger,
@@ -132,9 +171,11 @@ export {
   getRandomText,
   getLimitedText,
   humanizeReleaseDate,
+  humanizeCommentDate,
   humanizeRuntime,
   prularizeCommentsPhrase,
   getTwoMaxValuesWithIdsFromMap,
   createFilmWithMetaObject,
   getProfileRatingName,
+  getCommentsByIds
 };

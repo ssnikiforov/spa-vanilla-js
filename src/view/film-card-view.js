@@ -4,13 +4,8 @@ import { getLimitedText, humanizeReleaseDate, humanizeRuntime, prularizeComments
 const filmsCardTemplate = (film, userDetails, comments) => {
   const {
     title,
-    alternativeTitle,
     totalRating,
     poster,
-    ageRating,
-    director,
-    writers,
-    actors,
     release,
     runtime,
     genre,

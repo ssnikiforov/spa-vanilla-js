@@ -1,10 +1,5 @@
-const Emojis = {
-  SMILE: 'smile',
-  SLEEPING: 'sleeping',
-  PUKE: 'puke',
-  ANGRY: 'angry',
-};
 import { createElement } from '../render';
+import { Emojis } from '../const';
 
 const addNewCommentsRowsTemplate = () => Object.values(Emojis).map(emoji => {
   return `<input class="film-details__emoji-item visually-hidden"

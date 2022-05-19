@@ -28,11 +28,11 @@ films.forEach(film => {
   const filmWithMeta = createFilmWithMetaObject(film, userDetails, comments);
 
   filmsWithMetaStorage.set(filmWithMeta.id, filmWithMeta);
-  userDetailsStorage.set(film.id, userDetails)
-  comments.forEach(comment => commentsStorage.set(comment.id, comment))
+  userDetailsStorage.set(film.id, userDetails);
+  comments.forEach(comment => commentsStorage.set(comment.id, comment));
 });
 
 commonPresenter.init(userDetailsStorage);
 filmsPresenter.init(mainEl, filmsWithMetaStorage, commentsStorage);
 
-// popupPresenter.init(bodyEl);
+popupPresenter.init(bodyEl, filmsWithMetaStorage.get(0));
