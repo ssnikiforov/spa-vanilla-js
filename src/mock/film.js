@@ -56,7 +56,10 @@ const generateReleaseInfo = () => {
   };
 };
 
+let id = 0;
+
 export const generateFilm = () => ({
+  id: id++,
   title: generateTitle(),
   alternativeTitle: generateTitle(),
   totalRating: generateRating(),

@@ -73,6 +73,29 @@ const prularizeCommentsPhrase = (comments) => {
   return `${comments.length} ${comments.length === 1 ? `comment` : `comments`}`;
 };
 
+const getTwoMaxValuesWithIdsFromMap = (map) => {
+  let max = 0;
+  let secondMax = 0;
+
+  let maxIndex = 0;
+  let secondMaxIndex = 0;
+
+  for (let [id, value] of map) {
+    value = Number(value);
+
+    if (value > max) {
+      [secondMax, max] = [max, value]; // save previous max
+      [secondMaxIndex, maxIndex] = [maxIndex, id];
+
+    } else if (value < max && value > secondMax) {
+      secondMax = value; // new second biggest
+      secondMaxIndex = id;
+    }
+  }
+
+  return new Map([[maxIndex, max], [secondMaxIndex, secondMax]]);
+};
+
 export {
   getRandomNumber,
   getRandomInteger,
@@ -82,5 +105,6 @@ export {
   getLimitedText,
   humanizeReleaseDate,
   humanizeRuntime,
-  prularizeCommentsPhrase
+  prularizeCommentsPhrase,
+  getTwoMaxValuesWithIdsFromMap
 };

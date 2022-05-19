@@ -6,7 +6,10 @@ const generateEmoji = () => {
   return getRandomValuesFromArray(emojisValues, 1);
 };
 
+let id = 0;
+
 export const generateComment = () => ({
+  id: id++,
   author: getRandomValuesFromArray(names),
   comment: getRandomText(),
   date: getRandomDate(1),
