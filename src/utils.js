@@ -95,7 +95,9 @@ const humanizeRuntime = (runtime) => {
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
-const prularizeCommentsPhrase = (comments) => `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`;
+const pluralizeCommentsPhrase = (comments) => `${comments.length} ${comments.length === 1 ? 'comment' : 'comments'}`;
+
+const pluralizeMoviesPhrase = (movies) => `${movies.size} ${movies.size === 1 ? 'movie' : 'movies'}`;
 
 const getTwoMaxValuesWithIdsFromMap = (map) => {
   let max = 0;
@@ -171,9 +173,10 @@ export {
   humanizeReleaseDate,
   humanizeCommentDate,
   humanizeRuntime,
-  prularizeCommentsPhrase,
+  pluralizeCommentsPhrase,
+  pluralizeMoviesPhrase,
   getTwoMaxValuesWithIdsFromMap,
   createFilmWithMetaObject,
   getProfileRatingName,
-  getCommentsByIds
+  getCommentsByIds,
 };

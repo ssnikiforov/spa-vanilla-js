@@ -19,7 +19,7 @@ const addNewCommentsTemplate = () =>
     <div class="film-details__emoji-list">${addNewCommentsRowsTemplate()}</div>
   </div>`;
 
-export default class CommentsAddNew {
+export default class CommentsAddNewView {
   getTemplate () {
     return addNewCommentsTemplate();
   }

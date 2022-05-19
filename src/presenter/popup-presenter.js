@@ -3,7 +3,7 @@ import PopupFilmDetailsView from '../view/popup-film-details-view';
 import PopupFilmDetailsControlsView from '../view/popup-film-details-controls-view';
 import CommentsContainerView from '../view/comments-container-view';
 import CommentCardView from '../view/comment-card-view';
-import CommentsAddNew from '../view/comments-add-new';
+import CommentsAddNewView from '../view/comments-add-new-view';
 import { render } from '../render';
 import { getCommentsByIds } from '../utils';
 import { commentsStorage } from '../storage';
@@ -30,6 +30,6 @@ export default class PopupPresenter {
     });
 
     const commentsWrapperEl = popupFormEl.querySelector('.film-details__comments-wrap');
-    render(new CommentsAddNew(), commentsWrapperEl);
+    render(new CommentsAddNewView(), commentsWrapperEl);
   };
 }
