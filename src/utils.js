@@ -96,6 +96,17 @@ const getTwoMaxValuesWithIdsFromMap = (map) => {
   return new Map([[maxIndex, max], [secondMaxIndex, secondMax]]);
 };
 
+const createFilmWithMetaObject = (film, userDetails, comments) => {
+  const { id: filmId, ...filmWithoutId } = film;
+
+  return {
+    id: filmId,
+    comments: comments.map(comment => comment.id),
+    film_info: filmWithoutId,
+    user_details: userDetails
+  };
+};
+
 export {
   getRandomNumber,
   getRandomInteger,
@@ -106,5 +117,6 @@ export {
   humanizeReleaseDate,
   humanizeRuntime,
   prularizeCommentsPhrase,
-  getTwoMaxValuesWithIdsFromMap
+  getTwoMaxValuesWithIdsFromMap,
+  createFilmWithMetaObject,
 };
