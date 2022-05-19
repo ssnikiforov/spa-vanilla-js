@@ -17,9 +17,7 @@ const popupFilmDetailsTemplate = (film) => {
     description
   } = film;
 
-  const renderGenres = (genres) => {
-    return genres.map(genre => `<span class="film-details__genre">${genre}</span>`).join('');
-  };
+  const renderGenres = (genres) =>  genres.map((v) => `<span class="film-details__genre">${v}</span>`).join('');
 
   return `<div class="film-details__info-wrap">
     <div class="film-details__poster">

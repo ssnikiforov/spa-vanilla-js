@@ -3,14 +3,12 @@ import FilmsListContainerView from '../view/films-list-container-view';
 import FilmsShowMoreView from '../view/films-show-more-view';
 import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
-import CommentsModel from '../model/comments-model';
-import UserDetailsModel from '../model/user-details-model';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
 import { getTwoMaxValuesWithIdsFromMap, getCommentsByIds } from '../utils';
 
 const getTopRatedFilmsIds = (filmsWithMeta) => {
   const filmIdAndTotalRatingMap = new Map();
-  filmsWithMeta.forEach(({ id, film_info: film }) => filmIdAndTotalRatingMap.set(id, film.totalRating));
+  filmsWithMeta.forEach(({ id, film }) => filmIdAndTotalRatingMap.set(id, film.totalRating));
   const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(filmIdAndTotalRatingMap);
 
   return Array.from(twoMaxValuesWithIdsMap.keys());
@@ -37,7 +35,7 @@ export default class FilmsPresenter {
     render(new FilmsListContainerView(), filmsContainerEl);
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
 
-    this.films.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
+    this.films.forEach(({ film, userDetails, comments: commentsIds }) => {
       render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), filmsListContainerEl);
     });
 
@@ -53,8 +51,8 @@ export default class FilmsPresenter {
     const topRatedContainerEl = extraContainersColl[0];
     const topRatedListEl = topRatedContainerEl.querySelector('.films-list__container');
 
-    const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.films).map(index => this.films[index]);
-    twoTopRatedFilmsWithMeta.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
+    const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.films).map((index) => this.films[index]);
+    twoTopRatedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
       render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), topRatedListEl);
     });
 
@@ -62,8 +60,8 @@ export default class FilmsPresenter {
     const mostCommentedContainerEl = extraContainersColl[1];
     const mostCommentedListEl = mostCommentedContainerEl.querySelector('.films-list__container');
 
-    const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.films).map(index => this.films[index]);
-    twoMostCommentedFilmsWithMeta.forEach(({ film_info: film, user_details: userDetails, comments: commentsIds }) => {
+    const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.films).map((index) => this.films[index]);
+    twoMostCommentedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
       render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), mostCommentedListEl);
     });
   };

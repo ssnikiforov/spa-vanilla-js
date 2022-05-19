@@ -1,13 +1,12 @@
 import { createElement } from '../render';
 import { Emojis } from '../const';
 
-const addNewCommentsRowsTemplate = () => Object.values(Emojis).map(emoji => {
-  return `<input class="film-details__emoji-item visually-hidden"
+const addNewCommentsRowsTemplate = () => Object.values(Emojis).map((emoji) => `<input class="film-details__emoji-item visually-hidden"
             name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
       <label class="film-details__emoji-label" for="emoji-${emoji}">
         <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="${emoji}">
-      </label>`;
-}).join('');
+      </label>`
+).join('');
 
 const addNewCommentsTemplate = () =>
   `<div class="film-details__new-comment">

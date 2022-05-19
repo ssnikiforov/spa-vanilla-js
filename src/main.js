@@ -18,7 +18,7 @@ const popupPresenter = new PopupPresenter();
 const filmsModel = new FilmsModel();
 const films = [...filmsModel.getFilms()];
 
-films.forEach(film => {
+films.forEach((film) => {
   const commentsModel = new CommentsModel();
   const userDetailsModel = new UserDetailsModel();
 
@@ -29,7 +29,7 @@ films.forEach(film => {
 
   filmsWithMetaStorage.set(filmWithMeta.id, filmWithMeta);
   userDetailsStorage.set(film.id, userDetails);
-  comments.forEach(comment => commentsStorage.set(comment.id, comment));
+  comments.forEach((comment) => commentsStorage.set(comment.id, comment));
 });
 
 commonPresenter.init(userDetailsStorage);

@@ -1,8 +1,7 @@
 import { createElement } from '../render';
 import { humanizeCommentDate } from '../utils';
 
-const commentCardTemplate = ({ author, comment, date, emotion }) => {
-  return `<li class="film-details__comment">
+const commentCardTemplate = ({ author, comment, date, emotion }) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
@@ -15,7 +14,6 @@ const commentCardTemplate = ({ author, comment, date, emotion }) => {
       </p>
     </div>
   </li>`;
-};
 
 export default class CommentCardView {
   constructor (comment) {

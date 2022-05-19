@@ -9,7 +9,7 @@ import { getCommentsByIds } from '../utils';
 import { commentsStorage } from '../storage';
 
 export default class PopupPresenter {
-  init = (bodyContainer, { film_info: film, user_details: userDetails, comments: commentsIds }) => {
+  init = (bodyContainer, { film, userDetails, comments: commentsIds }) => {
     this.film = film;
     this.userDetails = userDetails;
     this.comments = getCommentsByIds(commentsIds, commentsStorage);
@@ -25,7 +25,7 @@ export default class PopupPresenter {
     render(new CommentsContainerView(this.comments), popupFormEl);
     const commentsListEl = popupFormEl.querySelector('.film-details__comments-list');
 
-    this.comments.forEach(comment => {
+    this.comments.forEach((comment) => {
       render(new CommentCardView(comment), commentsListEl);
     });
 
