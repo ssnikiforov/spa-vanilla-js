@@ -34,4 +34,10 @@ const FilmConsts = {
   MAX_RUNTIME: 250
 };
 
-export { names, genres, DayJsGaps, Emojis, FilmConsts };
+const ProfileRatings = {
+  NOVICE: 1,
+  FAN: 11,
+  MOVIE_BUFF: 21,
+}
+
+export { names, genres, DayJsGaps, Emojis, FilmConsts, ProfileRatings };

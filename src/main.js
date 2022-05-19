@@ -32,7 +32,7 @@ films.forEach(film => {
   comments.forEach(comment => commentsStorage.set(comment.id, comment))
 });
 
-commonPresenter.init();
+commonPresenter.init(userDetailsStorage);
 filmsPresenter.init(mainEl, filmsWithMetaStorage, commentsStorage);
 
 // popupPresenter.init(bodyEl);
