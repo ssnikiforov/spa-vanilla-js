@@ -32,8 +32,12 @@ export default class FilmsPresenter {
     const filmsContainerEl = mainContainer.querySelector('.films');
 
     // render films
-    render(new FilmsListContainerView(), filmsContainerEl);
+    render(new FilmsListContainerView(this.films), filmsContainerEl);
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
+
+    if (!filmsListContainerEl) { // if no films inside, then there are nothing to render
+      return;
+    }
 
     this.films.forEach(({ film, userDetails, comments: commentsIds }) => {
       render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), filmsListContainerEl);
