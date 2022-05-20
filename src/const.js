@@ -7,14 +7,6 @@ const names = [
   'Kitao Makao',
 ];
 
-const genres = [
-  'Comedy',
-  'Action',
-  'Drama',
-  'Thriller',
-  'Musical',
-];
-
 const DayJsGaps = {
   DAYS: -30,
   MONTHS: -12,
@@ -38,7 +30,38 @@ const Emojis = {
 const FilmConsts = {
   MAX_AGE_RATING: 18,
   MIN_RUNTIME: 30,
-  MAX_RUNTIME: 250
+  MAX_RUNTIME: 250,
+  TITLES: [
+    'The Man with the Golden Arm',
+    'The Dance of Life',
+    'Popeye the Sailor Meets Sindbad the Sailor',
+    'Sagebrush Trail',
+    'Santa Claus Conquers the Martians',
+  ],
+  POSTERS: [
+    'made-for-each-other.png',
+    'popeye-meets-sinbad.png',
+    'sagebrush-trail.jpg',
+    'santa-claus-conquers-the-martians.jpg',
+    'the-dance-of-life.jpg',
+    'the-great-flamarion.jpg',
+    'the-man-with-the-golden-arm.jpg',
+  ],
+  COUNTRIES: [
+    'Finland',
+    'Russia',
+    'USA',
+    'Poland',
+    'Germany',
+    'France',
+  ],
+  GENRES: [
+    'Comedy',
+    'Action',
+    'Drama',
+    'Thriller',
+    'Musical',
+  ],
 };
 
 const ProfileRatings = {
@@ -47,4 +70,4 @@ const ProfileRatings = {
   MOVIE_BUFF: 21,
 };
 
-export { names, genres, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs };
+export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs };

@@ -64,28 +64,20 @@ const getLimitedText = (string, maxLength = 140) => {
 const humanizeReleaseDate = (date, isFullFormat = false) => isFullFormat ? dayjs(date).format('D MMMM YYYY') : dayjs(date).format('YYYY');
 
 const humanizeCommentDate = (commentDate) => {
-  let commentDateString = '';
   const diffTimeInDays = dayjs().diff(commentDate, 'day');
 
   switch (true) {
-    case (diffTimeInDays > DayDiffs.THREE):
-      commentDateString = dayjs(commentDate).format('YYYY/MM/D H:m');
-      break;
-    case (diffTimeInDays === DayDiffs.THREE):
-      commentDateString = `${DayDiffs.THREE} days ago`;
-      break;
-    case (diffTimeInDays === DayDiffs.TWO):
-      commentDateString = `${DayDiffs.TWO} days ago`;
-      break;
-    case (diffTimeInDays === DayDiffs.ONE):
-      commentDateString = `${DayDiffs.ONE} day ago`;
-      break;
-    case (diffTimeInDays === DayDiffs.TODAY):
-      commentDateString = 'Today';
-      break;
+    case diffTimeInDays > DayDiffs.THREE:
+      return dayjs(commentDate).format('YYYY/MM/D H:m');
+    case diffTimeInDays === DayDiffs.THREE:
+      return `${DayDiffs.THREE} days ago`;
+    case diffTimeInDays === DayDiffs.TWO:
+      return `${DayDiffs.TWO} days ago`;
+    case diffTimeInDays === DayDiffs.ONE:
+      return `${DayDiffs.ONE} day ago`;
+    case diffTimeInDays === DayDiffs.TODAY:
+      return 'Today';
   }
-
-  return commentDateString;
 };
 
 const humanizeRuntime = (runtime) => {
@@ -136,20 +128,14 @@ const createFilmWithMetaObject = (film, userDetails, comments) => {
 };
 
 const getProfileRatingName = (watchedFilmsCount) => {
-  let profileRatingName = '';
   switch (true) {
-    case (watchedFilmsCount >= ProfileRatings.MOVIE_BUFF):
-      profileRatingName = 'Movie Buff';
-      break;
-    case (watchedFilmsCount >= ProfileRatings.FAN):
-      profileRatingName = 'Fan';
-      break;
-    case (watchedFilmsCount >= ProfileRatings.NOVICE):
-      profileRatingName = 'Novice';
-      break;
+    case watchedFilmsCount >= ProfileRatings.MOVIE_BUFF:
+      return 'Movie Buff';
+    case watchedFilmsCount >= ProfileRatings.FAN:
+      return 'Fan';
+    case watchedFilmsCount >= ProfileRatings.NOVICE:
+      return 'Novice';
   }
-
-  return profileRatingName;
 };
 
 const getCommentsByIds = (ids, comments) => {

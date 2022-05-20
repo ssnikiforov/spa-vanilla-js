@@ -1,10 +1,7 @@
 import { getRandomDate, getRandomValuesFromArray, getRandomText } from '../utils.js';
 import { names, Emojis } from '../const.js';
 
-const generateEmoji = () => {
-  const emojisValues = Object.values(Emojis);
-  return getRandomValuesFromArray(emojisValues, 1);
-};
+const generateEmoji = () => getRandomValuesFromArray(Object.values(Emojis), 1);
 
 let id = 0;
 

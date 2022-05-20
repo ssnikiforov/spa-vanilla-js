@@ -1,25 +1,20 @@
 import { createElement } from '../render';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils';
 
-const popupFilmDetailsTemplate = (film) => {
-  const {
-    title,
-    alternativeTitle,
-    totalRating,
-    poster,
-    ageRating,
-    director,
-    writers,
-    actors,
-    release,
-    runtime,
-    genre,
-    description
-  } = film;
-
-  const renderGenres = (genres) =>  genres.map((v) => `<span class="film-details__genre">${v}</span>`).join('');
-
-  return `<div class="film-details__info-wrap">
+const popupFilmDetailsTemplate = ({
+  title,
+  alternativeTitle,
+  totalRating,
+  poster,
+  ageRating,
+  director,
+  writers,
+  actors,
+  release,
+  runtime,
+  genre,
+  description
+}) => `<div class="film-details__info-wrap">
     <div class="film-details__poster">
       <img class="film-details__poster-img" src="${poster}" alt="">
 
@@ -65,25 +60,26 @@ const popupFilmDetailsTemplate = (film) => {
         </tr>
         <tr class="film-details__row">
           <td class="film-details__term">Genres</td>
-          <td class="film-details__cell">${renderGenres(genre)}</td>
+          <td class="film-details__cell">
+            ${genre.map((v) => `<span class="film-details__genre">${v}</span>`).join('')}
+          </td>
         </tr>
       </table>
 
       <p class="film-details__film-description">${description}</p>
     </div>
   </div>`;
-};
 
 export default class PopupFilmDetailsView {
-  constructor (film) {
+  constructor(film) {
     this.film = film;
   }
 
-  getTemplate () {
+  getTemplate() {
     return popupFilmDetailsTemplate(this.film);
   }
 
-  getElement () {
+  getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
@@ -91,7 +87,7 @@ export default class PopupFilmDetailsView {
     return this.element;
   }
 
-  removeElement () {
+  removeElement() {
     this.element = null;
   }
 }
