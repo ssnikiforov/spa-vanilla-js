@@ -1,13 +1,18 @@
-import { createElement } from '../render.js';
+import { createElement } from '../render';
+import { pluralizeMoviesPhrase } from '../utils';
 
-const footerCounterTemplate = () => '<p>130 291 movies inside</p>';
+const footerCounterTemplate = (films) => `<p>${pluralizeMoviesPhrase(films)} inside</p>`;
 
 export default class FooterCounterView {
-  getTemplate () {
-    return footerCounterTemplate();
+  constructor(films) {
+    this.films = films;
   }
 
-  getElement () {
+  getTemplate() {
+    return footerCounterTemplate(this.films);
+  }
+
+  getElement() {
     if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
@@ -15,7 +20,7 @@ export default class FooterCounterView {
     return this.element;
   }
 
-  removeElement () {
+  removeElement() {
     this.element = null;
   }
 }

@@ -1,14 +1,24 @@
-import { createElement } from '../render.js';
+import { createElement } from '../render';
+import { getProfileRatingName } from '../utils';
 
-const profileRatingTemplate = () =>
-  `<section class="header__profile profile">
-    <p class="profile__rating">Movie Buff</p>
+const profileRatingTemplate = (userDetails) => {
+  const watchedFilmsCount = Array.from(userDetails.values())
+    .filter(({ alreadyWatched }) => alreadyWatched === true)
+    .length;
+
+  return `<section class="header__profile profile">
+    <p class="profile__rating">${getProfileRatingName(watchedFilmsCount)}</p>
     <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
   </section>`;
+};
 
 export default class ProfileRatingView {
+  constructor (userDetails) {
+    this.userDetails = userDetails;
+  }
+
   getTemplate () {
-    return profileRatingTemplate();
+    return profileRatingTemplate(this.userDetails);
   }
 
   getElement () {
