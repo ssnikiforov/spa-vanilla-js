@@ -24,23 +24,26 @@ const popupFilmDetailsControlsTemplate = (userDetails) => {
 };
 
 export default class PopupFilmDetailsControlsView {
-  constructor (userDetails) {
-    this.userDetails = userDetails;
+  #element = null;
+  #userDetails = null;
+
+  constructor(userDetails) {
+    this.#userDetails = userDetails;
   }
 
-  getTemplate () {
-    return popupFilmDetailsControlsTemplate(this.userDetails);
+  get template() {
+    return popupFilmDetailsControlsTemplate(this.#userDetails);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  removeElement () {
-    this.element = null;
+  removeElement() {
+    this.#element = null;
   }
 }

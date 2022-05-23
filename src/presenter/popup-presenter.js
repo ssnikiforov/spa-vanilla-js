@@ -9,23 +9,27 @@ import { getCommentsByIds } from '../utils';
 import { commentsStorage } from '../storage';
 
 export default class PopupPresenter {
+  #film = null;
+  #userDetails = null;
+  #comments = null;
+
   init = (bodyContainer, { film, userDetails, comments: commentsIds }) => {
-    this.film = film;
-    this.userDetails = userDetails;
-    this.comments = getCommentsByIds(commentsIds, commentsStorage);
+    this.#film = film;
+    this.#userDetails = userDetails;
+    this.#comments = getCommentsByIds(commentsIds, commentsStorage);
 
     render(new PopupContainerView(), bodyContainer);
 
     const popupFormEl = bodyContainer.querySelector('.film-details__inner');
     const popupInnerContainerEl = popupFormEl.querySelector('.film-details__top-container');
 
-    render(new PopupFilmDetailsView(this.film), popupInnerContainerEl);
-    render(new PopupFilmDetailsControlsView(this.userDetails), popupInnerContainerEl);
+    render(new PopupFilmDetailsView(this.#film), popupInnerContainerEl);
+    render(new PopupFilmDetailsControlsView(this.#userDetails), popupInnerContainerEl);
 
-    render(new CommentsContainerView(this.comments), popupFormEl);
+    render(new CommentsContainerView(this.#comments), popupFormEl);
     const commentsListEl = popupFormEl.querySelector('.film-details__comments-list');
 
-    this.comments.forEach((comment) => {
+    this.#comments.forEach((comment) => {
       render(new CommentCardView(comment), commentsListEl);
     });
 

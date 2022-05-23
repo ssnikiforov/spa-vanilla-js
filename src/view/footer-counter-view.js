@@ -4,23 +4,26 @@ import { pluralizeMoviesPhrase } from '../utils';
 const footerCounterTemplate = (films) => `<p>${pluralizeMoviesPhrase(films)} inside</p>`;
 
 export default class FooterCounterView {
+  #element = null;
+  #films = null;
+
   constructor(films) {
-    this.films = films;
+    this.#films = films;
   }
 
-  getTemplate() {
-    return footerCounterTemplate(this.films);
+  get template() {
+    return footerCounterTemplate(this.#films);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

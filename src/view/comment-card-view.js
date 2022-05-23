@@ -16,23 +16,26 @@ const commentCardTemplate = ({ author, comment, date, emotion }) => `<li class="
   </li>`;
 
 export default class CommentCardView {
-  constructor (comment) {
-    this.comment = comment;
+  #comment = null;
+  #element = null;
+
+  constructor(comment) {
+    this.#comment = comment;
   }
 
-  getTemplate () {
-    return commentCardTemplate(this.comment);
+  get template() {
+    return commentCardTemplate(this.#comment);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  removeElement () {
-    this.element = null;
+  removeElement() {
+    this.#element = null;
   }
 }

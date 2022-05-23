@@ -16,14 +16,14 @@ const popupPresenter = new PopupPresenter();
 
 // prepare data
 const filmsModel = new FilmsModel();
-const films = [...filmsModel.getFilms()];
+const films = [...filmsModel.films];
 
 films.forEach((film) => {
   const commentsModel = new CommentsModel();
   const userDetailsModel = new UserDetailsModel();
 
-  const userDetails = userDetailsModel.getUserDetails();
-  const comments = [...commentsModel.getComments()];
+  const userDetails = userDetailsModel.userDetails;
+  const comments = [...commentsModel.comments];
 
   const filmWithMeta = createFilmWithMetaObject(film, userDetails, comments);
 
@@ -35,4 +35,4 @@ films.forEach((film) => {
 commonPresenter.init(filmsWithMetaStorage, userDetailsStorage);
 filmsPresenter.init(mainEl, filmsWithMetaStorage, commentsStorage);
 
-popupPresenter.init(bodyEl, filmsWithMetaStorage.get(0));
+// popupPresenter.init(bodyEl, filmsWithMetaStorage.get(0));
