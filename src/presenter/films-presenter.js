@@ -33,12 +33,11 @@ export default class FilmsPresenter {
 
     // render films
     render(new FilmsListContainerView(this.films), filmsContainerEl);
-    const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
-
-    if (!filmsListContainerEl) { // if no films inside, then there are nothing to render
+    if (!this.films.length) { // if no films inside, then there are nothing to render
       return;
     }
 
+    const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
     this.films.forEach(({ film, userDetails, comments: commentsIds }) => {
       render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), filmsListContainerEl);
     });
@@ -47,26 +46,51 @@ export default class FilmsPresenter {
     render(new FilmsShowMoreView(), filmsListContainerEl);
 
     // render extras container
-    render(new FilmsExtraContainerView('Top rated'), filmsContainerEl);
-    render(new FilmsExtraContainerView('Most commented'), filmsContainerEl);
+    const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.films).map((index) => this.films[index]);
+    const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.films).map((index) => this.films[index]);
+
+    if (twoTopRatedFilmsWithMeta.length > 1) {
+      render(new FilmsExtraContainerView('Top rated'), filmsContainerEl);
+    }
+
+    if (twoMostCommentedFilmsWithMeta.length > 1) {
+      render(new FilmsExtraContainerView('Most commented'), filmsContainerEl);
+    }
     const extraContainersColl = filmsContainerEl.querySelectorAll('.films-list--extra');
 
-    // render two top-rated films
-    const topRatedContainerEl = extraContainersColl[0];
-    const topRatedListEl = topRatedContainerEl.querySelector('.films-list__container');
+    // render extra films
+    if (!extraContainersColl.length) { // if there are no extra films, then don't render them
+      return;
+    }
 
-    const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.films).map((index) => this.films[index]);
-    twoTopRatedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
-      render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), topRatedListEl);
-    });
+    const firstExtraListEl = extraContainersColl[0] && extraContainersColl[0].querySelector('.films-list__container');
+    const secondExtraListEl = extraContainersColl[1] && extraContainersColl[1].querySelector('.films-list__container');
 
-    // render two most commented films
-    const mostCommentedContainerEl = extraContainersColl[1];
-    const mostCommentedListEl = mostCommentedContainerEl.querySelector('.films-list__container');
+    if (extraContainersColl.length === 1) { // if there are only one type of extra films, then render only it
+      twoTopRatedFilmsWithMeta.length && twoTopRatedFilmsWithMeta.forEach(({
+        film,
+        userDetails,
+        comments: commentsIds
+      }) => {
+        render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), firstExtraListEl);
+      });
 
-    const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.films).map((index) => this.films[index]);
-    twoMostCommentedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
-      render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), mostCommentedListEl);
-    });
+      twoMostCommentedFilmsWithMeta.length && twoMostCommentedFilmsWithMeta.forEach(({
+        film,
+        userDetails,
+        comments: commentsIds
+      }) => {
+        render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), firstExtraListEl);
+      });
+
+    } else { // otherwise, if there are two types of extra films, then render them both
+      twoTopRatedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
+        render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), firstExtraListEl);
+      });
+
+      twoMostCommentedFilmsWithMeta.forEach(({ film, userDetails, comments: commentsIds }) => {
+        render(new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.comments)), secondExtraListEl);
+      });
+    }
   };
 }
