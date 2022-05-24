@@ -7,6 +7,7 @@ import { filmsWithMetaStorage, userDetailsStorage, commentsStorage } from './sto
 import { createFilmWithMetaObject } from './utils';
 
 // prepare data
+// TODO: refactor with Fabric pattern (патчит массив), добавляет нужные поля
 const filmsModel = new FilmsModel();
 const films = [...filmsModel.films];
 films.forEach((film) => {

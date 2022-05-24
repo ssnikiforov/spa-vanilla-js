@@ -1,7 +1,7 @@
 import { createElement } from '../render';
-import { getLimitedText, humanizeReleaseDate, humanizeRuntime, pluralizeCommentsPhrase } from '../utils';
+import { getLimitedText, humanizeReleaseDate, humanizeRuntime, pluralizePhrase } from '../utils';
 
-const filmsCardTemplate = (film, userDetails, comments) => {
+const filmsCardTemplate = (film, userDetails, { length }) => {
   const {
     title,
     totalRating,
@@ -29,7 +29,7 @@ const filmsCardTemplate = (film, userDetails, comments) => {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
-      <span class="film-card__comments">${pluralizeCommentsPhrase(comments)}</span>
+      <span class="film-card__comments">${pluralizePhrase('comment', length)}</span>
     </a>
     <div class="film-card__controls">
       <button
