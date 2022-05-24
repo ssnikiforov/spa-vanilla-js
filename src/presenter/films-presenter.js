@@ -45,12 +45,13 @@ export default class FilmsPresenter {
       return;
     }
 
+    const filmsListEl = filmsContainerEl.querySelector('.films-list');
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
     this.#films.forEach((film) => {
       this.#renderFilm(film, filmsListContainerEl);
     });
 
-    render(new FilmsShowMoreView(), filmsListContainerEl);
+    render(new FilmsShowMoreView(), filmsListEl);
     this.#renderExtra(filmsContainerEl);
   };
 
