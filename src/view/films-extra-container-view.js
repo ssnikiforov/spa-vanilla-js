@@ -8,27 +8,30 @@ const filmsExtraContainerTemplate = (sectionName) =>
   </section>`;
 
 export default class FilmsExtraContainerView {
-  constructor (sectionName) {
-    this.sectionName = sectionName;
+  #element = null;
+  #sectionName = null;
+
+  constructor(sectionName) {
+    this.#sectionName = sectionName;
   }
 
-  getSectionName () {
-    return this.sectionName;
+  get sectionName() {
+    return this.#sectionName;
   }
 
-  getTemplate () {
-    return filmsExtraContainerTemplate(this.getSectionName());
+  get template() {
+    return filmsExtraContainerTemplate(this.sectionName);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  removeElement () {
-    this.element = null;
+  removeElement() {
+    this.#element = null;
   }
 }

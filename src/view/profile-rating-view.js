@@ -13,23 +13,26 @@ const profileRatingTemplate = (userDetails) => {
 };
 
 export default class ProfileRatingView {
-  constructor (userDetails) {
-    this.userDetails = userDetails;
+  #element = null;
+  #userDetails = null;
+
+  constructor(userDetails) {
+    this.#userDetails = userDetails;
   }
 
-  getTemplate () {
-    return profileRatingTemplate(this.userDetails);
+  get template() {
+    return profileRatingTemplate(this.#userDetails);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  removeElement () {
-    this.element = null;
+  removeElement() {
+    this.#element = null;
   }
 }

@@ -45,25 +45,30 @@ const filmsCardTemplate = (film, userDetails, comments) => {
 };
 
 export default class FilmCardView {
-  constructor (film, userDetails, comments) {
-    this.film = film;
-    this.userDetails = userDetails;
-    this.comments = comments;
+  #film = null;
+  #userDetails = null;
+  #comments = null;
+  #element = null;
+
+  constructor(film, userDetails, comments) {
+    this.#film = film;
+    this.#userDetails = userDetails;
+    this.#comments = comments;
   }
 
-  getTemplate () {
-    return filmsCardTemplate(this.film, this.userDetails, this.comments);
+  get template() {
+    return filmsCardTemplate(this.#film, this.#userDetails, this.#comments);
   }
 
-  getElement () {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
-  removeElement () {
-    this.element = null;
+  removeElement() {
+    this.#element = null;
   }
 }

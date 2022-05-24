@@ -1,7 +1,9 @@
 import { generateUserDetails } from '../mock/user-details';
 
 export default class UserDetailsModel {
-  userDetails = generateUserDetails();
+  #userDetails = generateUserDetails();
 
-  getUserDetails = () => this.userDetails;
+  get userDetails() {
+    return this.#userDetails;
+  }
 }

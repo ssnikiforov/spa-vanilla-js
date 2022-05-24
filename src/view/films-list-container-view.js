@@ -11,23 +11,26 @@ const renderHeader = (films) => {
 const filmsListContainerTemplate = (films) => `<section class="films-list">${renderHeader(films)}</section>`;
 
 export default class FilmsListContainerView {
+  #element = null;
+  #films = null;
+
   constructor(films) {
-    this.films = films;
+    this.#films = films;
   }
 
-  getTemplate() {
-    return filmsListContainerTemplate(this.films);
+  get template() {
+    return filmsListContainerTemplate(this.#films);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
