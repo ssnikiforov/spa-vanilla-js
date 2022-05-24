@@ -24,9 +24,13 @@ const getMostCommentedFilmsIds = (filmsWithMeta) => {
   return Array.from(twoMaxValuesWithIdsMap.keys());
 };
 
+const FILMS_COUNT_PER_STEP = 5;
+
 export default class FilmsPresenter {
   #films = null;
   #comments = null;
+  #showMoreButtonComponent = null;
+  #renderedFilmsCount = FILMS_COUNT_PER_STEP;
 
   init = (filmsWithMeta, comments) => {
     this.#films = Array.from(filmsWithMeta.values());
@@ -47,12 +51,35 @@ export default class FilmsPresenter {
 
     const filmsListEl = filmsContainerEl.querySelector('.films-list');
     const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
-    this.#films.forEach((film) => {
-      this.#renderFilm(film, filmsListContainerEl);
-    });
 
-    render(new FilmsShowMoreView(), filmsListEl);
+    for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
+      this.#renderFilm(this.#films[i], filmsListContainerEl);
+    }
+
+    this.#showMoreButtonComponent = new FilmsShowMoreView();
+    if (this.#films.length > FILMS_COUNT_PER_STEP) {
+      render(this.#showMoreButtonComponent, filmsListEl);
+
+      this.#showMoreButtonComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
+    }
+
     this.#renderExtra(filmsContainerEl);
+  };
+
+  #handleShowMoreButtonClick = (evt) => {
+    evt.preventDefault();
+    const filmsListContainerEl = document.querySelector('.films-list__container');
+
+    this.#films
+      .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
+      .forEach((film) => this.#renderFilm(film, filmsListContainerEl));
+
+    this.#renderedFilmsCount += FILMS_COUNT_PER_STEP;
+
+    if (this.#renderedFilmsCount >= this.#films.length) {
+      this.#showMoreButtonComponent.element.remove();
+      this.#showMoreButtonComponent.removeElement();
+    }
   };
 
   #renderExtra = (filmsContainerEl) => {
@@ -106,7 +133,7 @@ export default class FilmsPresenter {
     const hidePopup = (popupComp, parentEl) => {
       parentEl.removeChild(popupComp.element);
       parentEl.classList.remove('hide-overflow');
-      popupComp.element = null;
+      popupComp.element.remove();
     };
 
     const onEscKeyDown = (evt) => {
