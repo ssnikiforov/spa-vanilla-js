@@ -1,5 +1,4 @@
 import FilmsContainerView from '../view/films-container-view';
-import FilmsListContainerView from '../view/films-list-container-view';
 import FilmsShowMoreView from '../view/films-show-more-view';
 import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
@@ -7,6 +6,7 @@ import FilmsExtraContainerView from '../view/films-extra-container-view';
 import { getTwoMaxValuesWithIdsFromMap, getCommentsByIds } from '../utils';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
+import NoFilmView from '../view/no-film-view';
 
 const getTopRatedFilmsIds = (filmsWithMeta) => {
   const filmIdAndTotalRatingMap = new Map();
@@ -29,31 +29,35 @@ const FILMS_COUNT_PER_STEP = 5;
 export default class FilmsPresenter {
   #films = null;
   #comments = null;
+  #filmsComponent = new FilmsContainerView();
   #showMoreButtonComponent = null;
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
 
-  init = (filmsWithMeta, comments) => {
+  constructor(filmsWithMeta, comments) {
     this.#films = Array.from(filmsWithMeta.values());
     this.#comments = Array.from(comments.values());
+  }
 
-    const bodyEl = document.querySelector('body');
-    const mainEl = bodyEl.querySelector('.main');
+  init = () => {
+    const mainEl = document.querySelector('.main');
 
-    // render container
-    render(new FilmsContainerView(), mainEl);
-    const filmsContainerEl = mainEl.querySelector('.films');
-
-    // render films
-    render(new FilmsListContainerView(this.#films), filmsContainerEl);
+    // render films container or no films container
     if (!this.#films.length) { // if no films inside, then there are nothing to render
-      return;
+      render(new NoFilmView(), mainEl);
+    } else {
+      render(this.#filmsComponent, mainEl);
+      const filmsEl = this.#filmsComponent.element;
+      this.#renderFilms(filmsEl);
+      this.#renderExtra(filmsEl);
     }
+  };
 
+  #renderFilms = (filmsContainerEl) => {
     const filmsListEl = filmsContainerEl.querySelector('.films-list');
-    const filmsListContainerEl = filmsContainerEl.querySelector('.films-list__container');
+    const filmsListContainerEl = filmsListEl.querySelector('.films-list__container');
 
     for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#films[i], filmsListContainerEl);
+      this.#renderFilmCard(this.#films[i], filmsListContainerEl);
     }
 
     this.#showMoreButtonComponent = new FilmsShowMoreView();
@@ -62,8 +66,6 @@ export default class FilmsPresenter {
 
       this.#showMoreButtonComponent.element.addEventListener('click', this.#handleShowMoreButtonClick);
     }
-
-    this.#renderExtra(filmsContainerEl);
   };
 
   #handleShowMoreButtonClick = (evt) => {
@@ -72,7 +74,7 @@ export default class FilmsPresenter {
 
     this.#films
       .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
-      .forEach((film) => this.#renderFilm(film, filmsListContainerEl));
+      .forEach((film) => this.#renderFilmCard(film, filmsListContainerEl));
 
     this.#renderedFilmsCount += FILMS_COUNT_PER_STEP;
 
@@ -106,23 +108,23 @@ export default class FilmsPresenter {
 
     if (extraContainersColl.length === 1) { // if there are only one type of extra films, then render only it
       twoTopRatedFilmsWithMeta.forEach((film) => {
-        this.#renderFilm(film, firstExtraListEl);
+        this.#renderFilmCard(film, firstExtraListEl);
       });
       twoMostCommentedFilmsWithMeta.forEach((film) => {
-        this.#renderFilm(film, firstExtraListEl);
+        this.#renderFilmCard(film, firstExtraListEl);
       });
 
     } else { // otherwise, if there are two types of extra films, then render them both
       twoTopRatedFilmsWithMeta.forEach((film) => {
-        this.#renderFilm(film, firstExtraListEl);
+        this.#renderFilmCard(film, firstExtraListEl);
       });
       twoMostCommentedFilmsWithMeta.forEach((film) => {
-        this.#renderFilm(film, secondExtraListEl);
+        this.#renderFilmCard(film, secondExtraListEl);
       });
     }
   };
 
-  #renderFilm = ({ film, userDetails, comments: commentsIds }, container) => {
+  #renderFilmCard = ({ film, userDetails, comments: commentsIds }, container) => {
     const comments = getCommentsByIds(commentsIds, this.#comments);
     const filmComponent = new FilmCardView(film, userDetails, comments);
     const popupComponent = new PopupView(film, userDetails);
