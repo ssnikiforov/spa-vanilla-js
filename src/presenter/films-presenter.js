@@ -5,6 +5,8 @@ import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
 import { getTwoMaxValuesWithIdsFromMap, getCommentsByIds } from '../utils';
+import PopupView from '../view/popup-view';
+import CommentsView from '../view/comments-view';
 
 const getTopRatedFilmsIds = (filmsWithMeta) => {
   const filmIdAndTotalRatingMap = new Map();
@@ -26,13 +28,16 @@ export default class FilmsPresenter {
   #films = null;
   #comments = null;
 
-  init = (mainContainer, filmsWithMeta, comments) => {
+  init = (filmsWithMeta, comments) => {
     this.#films = Array.from(filmsWithMeta.values());
     this.#comments = Array.from(comments.values());
 
+    const bodyEl = document.querySelector('body');
+    const mainEl = bodyEl.querySelector('.main');
+
     // render container
-    render(new FilmsContainerView(), mainContainer);
-    const filmsContainerEl = mainContainer.querySelector('.films');
+    render(new FilmsContainerView(), mainEl);
+    const filmsContainerEl = mainEl.querySelector('.films');
 
     // render films
     render(new FilmsListContainerView(this.#films), filmsContainerEl);
@@ -45,9 +50,11 @@ export default class FilmsPresenter {
       this.#renderFilm(film, filmsListContainerEl);
     });
 
-    // render show more
     render(new FilmsShowMoreView(), filmsListContainerEl);
+    this.#renderExtra(filmsContainerEl);
+  };
 
+  #renderExtra = (filmsContainerEl) => {
     // render extras container
     const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.#films).map((index) => this.#films[index]);
     const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.#films).map((index) => this.#films[index]);
@@ -88,8 +95,56 @@ export default class FilmsPresenter {
   };
 
   #renderFilm = ({ film, userDetails, comments: commentsIds }, container) => {
-    const filmComponent = new FilmCardView(film, userDetails, getCommentsByIds(commentsIds, this.#comments));
+    const comments = getCommentsByIds(commentsIds, this.#comments);
+    const filmComponent = new FilmCardView(film, userDetails, comments);
+    const popupComponent = new PopupView(film, userDetails);
+    const commentsComponent = new CommentsView(comments);
 
+    const bodyEl = document.querySelector('body');
+
+    const hidePopup = (popupComp, parentEl) => {
+      parentEl.removeChild(popupComp.element);
+      parentEl.classList.remove('hide-overflow');
+      popupComp.element = null;
+    };
+
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        hidePopup(popupComponent, bodyEl);
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    const onCloseButtonClick = (evt) => {
+      evt.preventDefault();
+      hidePopup(popupComponent, bodyEl);
+    };
+
+    const showPopup = (popupComp, commentsComp, parentEl) => {
+      const popupEl = popupComponent.element;
+      const commentsEl = popupEl.querySelector('.film-details__bottom-container');
+      const closeButtonEl = popupEl.querySelector('.film-details__close-btn');
+
+      render(popupComp, parentEl);
+      render(commentsComp, commentsEl);
+      parentEl.classList.add('hide-overflow');
+      closeButtonEl.addEventListener('click', onCloseButtonClick);
+      document.addEventListener('keydown', onEscKeyDown);
+    };
+
+
+    const onFilmCardClick = (evt) => {
+      evt.preventDefault();
+      const openedPopup = bodyEl.querySelector('.film-details');
+      if (openedPopup) {
+        bodyEl.removeChild(openedPopup);
+      }
+
+      showPopup(popupComponent, commentsComponent, bodyEl);
+    };
+
+    filmComponent.element.querySelector('a').addEventListener('click', onFilmCardClick);
     render(filmComponent, container);
   };
 }
