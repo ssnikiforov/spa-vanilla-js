@@ -1,20 +1,21 @@
 import { createElement } from '../render';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils';
 
-const renderFilmDetails = ({
-  title,
-  alternativeTitle,
-  totalRating,
-  poster,
-  ageRating,
-  director,
-  writers,
-  actors,
-  release,
-  runtime,
-  genre,
-  description
-}) => `<div class="film-details__info-wrap">
+const popupTemplate = (film, userDetails) => {
+  const renderFilmDetails = ({
+    title,
+    alternativeTitle,
+    totalRating,
+    poster,
+    ageRating,
+    director,
+    writers,
+    actors,
+    release,
+    runtime,
+    genre,
+    description
+  }) => `<div class="film-details__info-wrap">
     <div class="film-details__poster">
       <img class="film-details__poster-img" src="${poster}" alt="">
 
@@ -70,12 +71,12 @@ const renderFilmDetails = ({
     </div>
   </div>`;
 
-const renderControls = ({ watchlist, alreadyWatched, favorite }) => {
-  const getActiveClassNameModifier = (item) => item
-    ? 'film-details__control-button--active'
-    : '';
+  const renderControls = ({ watchlist, alreadyWatched, favorite }) => {
+    const getActiveClassNameModifier = (item) => item
+      ? 'film-details__control-button--active'
+      : '';
 
-  return `<section class="film-details__controls">
+    return `<section class="film-details__controls">
     <button type="button"
       class="film-details__control-button film-details__control-button--watchlist ${getActiveClassNameModifier(watchlist)}"
       id="watchlist"
@@ -89,10 +90,9 @@ const renderControls = ({ watchlist, alreadyWatched, favorite }) => {
         id="favorite"
         name="favorite">Add to favorites</button>
   </section>`;
-};
+  };
 
-const popupTemplate = (film, userDetails) =>
-  `<section class="film-details">
+  return `<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="film-details__top-container">
         <div class="film-details__close">
@@ -104,6 +104,7 @@ const popupTemplate = (film, userDetails) =>
       <div class="film-details__bottom-container"></div>
     </form>
    </section>`;
+};
 
 export default class PopupView {
   #element = null;

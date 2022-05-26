@@ -1,7 +1,7 @@
 import { createElement } from '../render';
-import { pluralizeMoviesPhrase } from '../utils';
+import { pluralizePhrase } from '../utils';
 
-const footerCounterTemplate = (films) => `<p>${pluralizeMoviesPhrase(films)} inside</p>`;
+const footerCounterTemplate = (length) => `<p>${pluralizePhrase('film', length)} inside</p>`;
 
 export default class FooterCounterView {
   #element = null;
@@ -12,7 +12,7 @@ export default class FooterCounterView {
   }
 
   get template() {
-    return footerCounterTemplate(this.#films);
+    return footerCounterTemplate(this.#films.size);
   }
 
   get element() {
