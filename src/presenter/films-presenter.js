@@ -1,9 +1,10 @@
 import FilmsContainerView from '../view/films-container-view';
 import ShowMoreView from '../view/show-more-view';
-import { render } from '../render';
+import { render, remove } from '../framework/render';
 import FilmCardView from '../view/film-card-view';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
-import { getCommentsByIds, getTwoMaxValuesWithIdsFromMap } from '../utils';
+import { getCommentsByIds } from '../utils/film';
+import { getTwoMaxValuesWithIdsFromMap } from '../utils/common';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import NoFilmView from '../view/no-film-view';
@@ -15,6 +16,7 @@ export default class FilmsPresenter {
   #comments = null;
   #filmsContainerComponent = new FilmsContainerView();
   #showMoreButtonComponent = null;
+  #popupComponent = null;
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
 
   constructor(filmsWithMeta, comments) {
@@ -51,8 +53,7 @@ export default class FilmsPresenter {
       this.#renderedFilmsCount += FILMS_COUNT_PER_STEP;
 
       if (this.#renderedFilmsCount >= this.#films.length) {
-        this.#showMoreButtonComponent.element.remove();
-        this.#showMoreButtonComponent.removeElement();
+        remove(this.#showMoreButtonComponent);
       }
     };
 
@@ -111,45 +112,45 @@ export default class FilmsPresenter {
   #renderFilmCard = ({ film, userDetails, comments: commentsIds }, container) => {
     const comments = getCommentsByIds(commentsIds, this.#comments);
     const filmComponent = new FilmCardView(film, userDetails, comments);
-    const popupComponent = new PopupView(film, userDetails);
-    const commentsComponent = new CommentsView(comments);
 
     const bodyEl = document.querySelector('body');
 
-    const hidePopup = (popupComp, parentEl) => {
-      parentEl.classList.remove('hide-overflow');
-      popupComp.element.remove();
+    const hidePopup = () => {
+      bodyEl.classList.remove('hide-overflow');
+      remove(this.#popupComponent);
     };
 
     const onEscKeyDown = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        hidePopup(popupComponent, bodyEl);
+        hidePopup();
         document.removeEventListener('keydown', onEscKeyDown);
       }
     };
 
     const onCloseButtonClick = () => {
-      hidePopup(popupComponent, bodyEl);
+      hidePopup();
     };
 
-    const showPopup = (popupComp, commentsComp, parentEl) => {
-      render(popupComp, parentEl);
-      render(commentsComp, popupComponent.commentsEl);
-      parentEl.classList.add('hide-overflow');
-      popupComponent.closeButtonClickHandler(onCloseButtonClick)
+    const showPopup = () => {
+      this.#popupComponent = new PopupView(film, userDetails);
+      const commentsComponent = new CommentsView(comments);
+
+      render(this.#popupComponent, bodyEl);
+      render(commentsComponent, this.#popupComponent.commentsEl);
+      bodyEl.classList.add('hide-overflow');
+      this.#popupComponent.closeButtonClickHandler(onCloseButtonClick);
       document.addEventListener('keydown', onEscKeyDown);
     };
 
-
     const onFilmCardClick = () => {
-      const openedPopup = bodyEl.querySelector('.film-details');
-      if (openedPopup) {
-        bodyEl.removeChild(openedPopup);
+      if (this.#popupComponent) {
+        remove(this.#popupComponent);
       }
 
-      showPopup(popupComponent, commentsComponent, bodyEl);
+      showPopup();
     };
+
     filmComponent.setClickHandler(onFilmCardClick);
     render(filmComponent, container);
   };

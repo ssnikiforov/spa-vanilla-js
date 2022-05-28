@@ -47,14 +47,12 @@ const humanizeRuntime = (runtime) => {
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
-const createFilmWithMetaObject = ({ id: filmId, ...filmWithoutId }, userDetails, comments) => {
-  return {
-    id: filmId,
-    comments: comments.map((comment) => comment.id),
-    film: filmWithoutId,
-    userDetails
-  };
-};
+const createFilmWithMetaObject = ({ id: filmId, ...filmWithoutId }, userDetails, comments) => ({
+  id: filmId,
+  comments: comments.map((comment) => comment.id),
+  film: filmWithoutId,
+  userDetails
+});
 
 const getProfileRatingName = (watchedFilmsCount) => {
   switch (true) {

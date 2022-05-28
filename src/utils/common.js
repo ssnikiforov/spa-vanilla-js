@@ -73,4 +73,4 @@ export {
   getLimitedText,
   pluralizePhrase,
   getTwoMaxValuesWithIdsFromMap,
-}
+};
