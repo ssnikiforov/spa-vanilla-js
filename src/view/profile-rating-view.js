@@ -1,5 +1,5 @@
-import { getProfileRatingName } from '../utils';
 import AbstractView from '../framework/view/abstract-view';
+import { getProfileRatingName } from '../utils/film';
 
 const profileRatingTemplate = (userDetails) => {
   const watchedFilmsCount = Array.from(userDetails.values())

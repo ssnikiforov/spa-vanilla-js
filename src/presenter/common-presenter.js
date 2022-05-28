@@ -2,7 +2,7 @@ import ProfileRatingView from '../view/profile-rating-view';
 import MainNavigationView from '../view/main-navigation-view';
 import MainSortView from '../view/main-sort-view';
 import FooterCounterView from '../view/footer-counter-view';
-import { render } from '../render';
+import { render } from '../framework/render';
 
 export default class CommonPresenter {
   #films = null;

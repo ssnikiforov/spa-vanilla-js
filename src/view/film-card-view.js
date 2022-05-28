@@ -1,5 +1,6 @@
-import { getLimitedText, humanizeReleaseDate, humanizeRuntime, pluralizePhrase } from '../utils';
 import AbstractView from '../framework/view/abstract-view';
+import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
+import { getLimitedText, pluralizePhrase } from '../utils/common';
 
 const filmsCardTemplate = (film, userDetails, commentsCount) => {
   const {

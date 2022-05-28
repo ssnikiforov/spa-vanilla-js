@@ -1,6 +1,6 @@
-import { humanizeCommentDate } from '../utils';
-import { Emojis } from '../const';
 import AbstractView from '../framework/view/abstract-view';
+import { humanizeCommentDate } from '../utils/film';
+import { Emojis } from '../const';
 
 const commentsTemplate = (comments) => {
   const renderCommentCard = ({ author, comment, date, emotion }) => `<li class="film-details__comment">

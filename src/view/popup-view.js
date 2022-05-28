@@ -1,5 +1,5 @@
-import { humanizeReleaseDate, humanizeRuntime } from '../utils';
 import AbstractView from '../framework/view/abstract-view';
+import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 
 const popupTemplate = (film, userDetails) => {
   const renderFilmDetails = ({

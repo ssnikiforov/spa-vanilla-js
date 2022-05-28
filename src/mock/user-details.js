@@ -1,4 +1,5 @@
-import { getRandomInteger, getRandomDate } from '../utils.js';
+import { getRandomDate } from '../utils/film.js';
+import { getRandomInteger } from '../utils/common';
 
 export const generateUserDetails = () => {
   const watchingDate = getRandomInteger()

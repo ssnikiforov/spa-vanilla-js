@@ -1,5 +1,5 @@
-import { pluralizePhrase } from '../utils';
 import AbstractView from '../framework/view/abstract-view';
+import { pluralizePhrase } from '../utils/common';
 
 const footerCounterTemplate = (filmsCount) => `<p>${pluralizePhrase('film', filmsCount)} inside</p>`;
 
