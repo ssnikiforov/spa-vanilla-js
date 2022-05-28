@@ -1,5 +1,5 @@
 import FilmsContainerView from '../view/films-container-view';
-import FilmsShowMoreView from '../view/films-show-more-view';
+import ShowMoreView from '../view/show-more-view';
 import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
@@ -46,9 +46,7 @@ export default class FilmsPresenter {
   #renderShowMoreButton = () => {
     const filmsContainerEl = this.#filmsContainerComponent.element;
 
-    const handleShowMoreButtonClick = (evt) => {
-      evt.preventDefault();
-
+    const handleShowMoreButtonClick = () => {
       this.#films
         .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
         .forEach((film) => this.#renderFilmCard(film, filmsContainerEl.querySelector('.films-list__container')));
@@ -61,11 +59,11 @@ export default class FilmsPresenter {
       }
     };
 
-    this.#showMoreButtonComponent = new FilmsShowMoreView();
+    this.#showMoreButtonComponent = new ShowMoreView();
     if (this.#films.length > FILMS_COUNT_PER_STEP) {
       render(this.#showMoreButtonComponent, filmsContainerEl.querySelector('.films-list'));
 
-      this.#showMoreButtonComponent.element.addEventListener('click', handleShowMoreButtonClick);
+      this.#showMoreButtonComponent.setClickHandler(handleShowMoreButtonClick);
     }
   };
 
@@ -153,8 +151,7 @@ export default class FilmsPresenter {
     };
 
 
-    const onFilmCardClick = (evt) => {
-      evt.preventDefault();
+    const onFilmCardClick = () => {
       const openedPopup = bodyEl.querySelector('.film-details');
       if (openedPopup) {
         bodyEl.removeChild(openedPopup);
@@ -162,8 +159,7 @@ export default class FilmsPresenter {
 
       showPopup(popupComponent, commentsComponent, bodyEl);
     };
-
-    filmComponent.element.querySelector('a').addEventListener('click', onFilmCardClick);
+    filmComponent.setClickHandler(onFilmCardClick);
     render(filmComponent, container);
   };
 }
