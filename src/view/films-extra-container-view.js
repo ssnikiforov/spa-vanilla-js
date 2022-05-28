@@ -22,4 +22,8 @@ export default class FilmsExtraContainerView extends AbstractView {
   get template() {
     return filmsExtraContainerTemplate(this.sectionName);
   }
+
+  get extrasWrapperEl() {
+    return this.element.querySelector('.films-list__container');
+  }
 }

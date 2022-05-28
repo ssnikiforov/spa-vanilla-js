@@ -119,4 +119,22 @@ export default class PopupView extends AbstractView {
   get template() {
     return popupTemplate(this.#film, this.#userDetails);
   }
+
+  get commentsEl() {
+    return this.element.querySelector('.film-details__bottom-container');
+  }
+
+  get closeButtonEl() {
+    return this.element.querySelector('.film-details__close-btn');
+  }
+
+  closeButtonClickHandler = (callback) => {
+    this._callback.closeButtonClick = callback;
+    this.closeButtonEl.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  };
 }

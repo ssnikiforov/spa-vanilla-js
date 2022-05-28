@@ -36,20 +36,17 @@ export default class FilmsPresenter {
   };
 
   #renderFilms = () => {
-    const filmsContainerEl = this.#filmsContainerComponent.element;
     for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
-      this.#renderFilmCard(this.#films[i], filmsContainerEl.querySelector('.films-list__container'));
+      this.#renderFilmCard(this.#films[i], this.#filmsContainerComponent.filmsListEl);
     }
     this.#renderShowMoreButton();
   };
 
   #renderShowMoreButton = () => {
-    const filmsContainerEl = this.#filmsContainerComponent.element;
-
     const handleShowMoreButtonClick = () => {
       this.#films
         .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
-        .forEach((film) => this.#renderFilmCard(film, filmsContainerEl.querySelector('.films-list__container')));
+        .forEach((film) => this.#renderFilmCard(film, this.#filmsContainerComponent.filmsListEl));
 
       this.#renderedFilmsCount += FILMS_COUNT_PER_STEP;
 
@@ -61,7 +58,7 @@ export default class FilmsPresenter {
 
     this.#showMoreButtonComponent = new ShowMoreView();
     if (this.#films.length > FILMS_COUNT_PER_STEP) {
-      render(this.#showMoreButtonComponent, filmsContainerEl.querySelector('.films-list'));
+      render(this.#showMoreButtonComponent, this.#filmsContainerComponent.wrapperEl);
 
       this.#showMoreButtonComponent.setClickHandler(handleShowMoreButtonClick);
     }
@@ -92,7 +89,7 @@ export default class FilmsPresenter {
 
     if (twoTopRatedFilmsWithMeta.length > 1) {
       const topRatedComponent = new FilmsExtraContainerView('Top rated');
-      const topRatedListEl = topRatedComponent.element.querySelector('.films-list__container');
+      const topRatedListEl = topRatedComponent.extrasWrapperEl;
 
       render(topRatedComponent, filmsContainerEl);
       twoTopRatedFilmsWithMeta.forEach((film) => {
@@ -102,7 +99,7 @@ export default class FilmsPresenter {
 
     if (twoMostCommentedFilmsWithMeta.length > 1) {
       const mostCommentedComponent = new FilmsExtraContainerView('Most commented');
-      const mostCommentedListEl = mostCommentedComponent.element.querySelector('.films-list__container');
+      const mostCommentedListEl = mostCommentedComponent.extrasWrapperEl;
 
       render(mostCommentedComponent, filmsContainerEl);
       twoMostCommentedFilmsWithMeta.forEach((film) => {
@@ -120,7 +117,6 @@ export default class FilmsPresenter {
     const bodyEl = document.querySelector('body');
 
     const hidePopup = (popupComp, parentEl) => {
-      parentEl.removeChild(popupComp.element);
       parentEl.classList.remove('hide-overflow');
       popupComp.element.remove();
     };
@@ -133,20 +129,15 @@ export default class FilmsPresenter {
       }
     };
 
-    const onCloseButtonClick = (evt) => {
-      evt.preventDefault();
+    const onCloseButtonClick = () => {
       hidePopup(popupComponent, bodyEl);
     };
 
     const showPopup = (popupComp, commentsComp, parentEl) => {
-      const popupEl = popupComponent.element;
-      const commentsEl = popupEl.querySelector('.film-details__bottom-container');
-      const closeButtonEl = popupEl.querySelector('.film-details__close-btn');
-
       render(popupComp, parentEl);
-      render(commentsComp, commentsEl);
+      render(commentsComp, popupComponent.commentsEl);
       parentEl.classList.add('hide-overflow');
-      closeButtonEl.addEventListener('click', onCloseButtonClick);
+      popupComponent.closeButtonClickHandler(onCloseButtonClick)
       document.addEventListener('keydown', onEscKeyDown);
     };
 
