@@ -3,7 +3,7 @@ import FilmsShowMoreView from '../view/films-show-more-view';
 import { render } from '../render';
 import FilmCardView from '../view/film-card-view';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
-import { getTwoMaxValuesWithIdsFromMap, getCommentsByIds } from '../utils';
+import { getCommentsByIds, getTwoMaxValuesWithIdsFromMap } from '../utils';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import NoFilmView from '../view/no-film-view';
@@ -94,7 +94,7 @@ export default class FilmsPresenter {
 
     if (twoTopRatedFilmsWithMeta.length > 1) {
       const topRatedComponent = new FilmsExtraContainerView('Top rated');
-      const topRatedListEl = topRatedComponent.element.querySelector('.films-list__container')
+      const topRatedListEl = topRatedComponent.element.querySelector('.films-list__container');
 
       render(topRatedComponent, filmsContainerEl);
       twoTopRatedFilmsWithMeta.forEach((film) => {
@@ -104,7 +104,7 @@ export default class FilmsPresenter {
 
     if (twoMostCommentedFilmsWithMeta.length > 1) {
       const mostCommentedComponent = new FilmsExtraContainerView('Most commented');
-      const mostCommentedListEl = mostCommentedComponent.element.querySelector('.films-list__container')
+      const mostCommentedListEl = mostCommentedComponent.element.querySelector('.films-list__container');
 
       render(mostCommentedComponent, filmsContainerEl);
       twoMostCommentedFilmsWithMeta.forEach((film) => {

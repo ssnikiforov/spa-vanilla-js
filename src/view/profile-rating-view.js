@@ -1,5 +1,5 @@
-import { createElement } from '../render';
 import { getProfileRatingName } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 const profileRatingTemplate = (userDetails) => {
   const watchedFilmsCount = Array.from(userDetails.values())
@@ -12,27 +12,15 @@ const profileRatingTemplate = (userDetails) => {
   </section>`;
 };
 
-export default class ProfileRatingView {
-  #element = null;
+export default class ProfileRatingView extends AbstractView {
   #userDetails = null;
 
   constructor(userDetails) {
+    super();
     this.#userDetails = userDetails;
   }
 
   get template() {
     return profileRatingTemplate(this.#userDetails);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

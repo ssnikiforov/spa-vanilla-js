@@ -1,4 +1,4 @@
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view';
 
 const mainSortTemplate = () =>
   `<ul class="sort">
@@ -7,22 +7,8 @@ const mainSortTemplate = () =>
     <li><a href="#" class="sort__button">Sort by rating</a></li>
   </ul>`;
 
-export default class MainSortView {
-  #element = null;
-
+export default class MainSortView extends AbstractView {
   get template() {
     return mainSortTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

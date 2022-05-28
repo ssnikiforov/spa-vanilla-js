@@ -1,6 +1,6 @@
-import { createElement } from '../render';
 import { humanizeCommentDate } from '../utils';
 import { Emojis } from '../const';
+import AbstractView from '../framework/view/abstract-view';
 
 const commentsTemplate = (comments) => {
   const renderCommentCard = ({ author, comment, date, emotion }) => `<li class="film-details__comment">
@@ -38,31 +38,15 @@ const commentsTemplate = (comments) => {
 </section>`;
 };
 
-export default class CommentsView {
-  #element = null;
+export default class CommentsView extends AbstractView {
   #comments = null;
 
   constructor(comments) {
+    super();
     this.#comments = comments;
   }
 
   get template() {
     return commentsTemplate(this.#comments);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  set element(element) {
-    this.#element = element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

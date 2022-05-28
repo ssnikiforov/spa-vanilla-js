@@ -1,5 +1,5 @@
-import { createElement } from '../render';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 const popupTemplate = (film, userDetails) => {
   const renderFilmDetails = ({
@@ -106,33 +106,17 @@ const popupTemplate = (film, userDetails) => {
    </section>`;
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbstractView {
   #film = null;
   #userDetails = null;
 
   constructor(film, userDetails) {
+    super();
     this.#film = film;
     this.#userDetails = userDetails;
   }
 
   get template() {
     return popupTemplate(this.#film, this.#userDetails);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  set element(element) {
-    this.#element = element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
