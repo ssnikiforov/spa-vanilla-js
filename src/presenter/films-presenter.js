@@ -1,13 +1,13 @@
 import FilmsContainerView from '../view/films-container-view';
 import ShowMoreView from '../view/show-more-view';
-import { render, remove } from '../framework/render';
+import { remove, render } from '../framework/render';
 import FilmCardView from '../view/film-card-view';
 import FilmsExtraContainerView from '../view/films-extra-container-view';
-import { getCommentsByIds } from '../utils/film';
-import { getTwoMaxValuesWithIdsFromMap } from '../utils/common';
+import { getCommentsByIds, getTwoExtraFilmsIds } from '../utils/film';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import NoFilmView from '../view/no-film-view';
+import { extraFilmsSectionNames } from '../const';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -66,89 +66,64 @@ export default class FilmsPresenter {
   };
 
   #renderExtra = () => {
-    // calculate top-rated and most commented films
-    const getTopRatedFilmsIds = (filmsWithMeta) => {
-      const filmIdAndTotalRatingMap = new Map();
-      filmsWithMeta.forEach(({ id, film }) => filmIdAndTotalRatingMap.set(id, film.totalRating));
-      const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(filmIdAndTotalRatingMap);
-
-      return Array.from(twoMaxValuesWithIdsMap.keys()).map((index) => filmsWithMeta[index]);
-    };
-
-    const getMostCommentedFilmsIds = (filmsWithMeta) => {
-      const filmIdAndCommentsIdsMap = new Map();
-      filmsWithMeta.forEach(({ id, comments }) => filmIdAndCommentsIdsMap.set(id, comments.length));
-      const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(filmIdAndCommentsIdsMap);
-
-      return Array.from(twoMaxValuesWithIdsMap.keys()).map((index) => filmsWithMeta[index]);
-    };
-    const twoTopRatedFilmsWithMeta = getTopRatedFilmsIds(this.#films);
-    const twoMostCommentedFilmsWithMeta = getMostCommentedFilmsIds(this.#films);
-
-    // render extras container
     const filmsContainerEl = this.#filmsContainerComponent.element;
+    const extraFilms = {
+      TOP_RATED: getTwoExtraFilmsIds(this.#films, 'film', 'totalRating'),
+      MOST_COMMENTED: getTwoExtraFilmsIds(this.#films, 'comments', 'length')
+    };
 
-    if (twoTopRatedFilmsWithMeta.length > 1) {
-      const topRatedComponent = new FilmsExtraContainerView('Top rated');
-      const topRatedListEl = topRatedComponent.extrasWrapperEl;
+    Object.entries(extraFilms).forEach(([key, value]) => {
+      if (!value.length) {
+        return;
+      }
 
-      render(topRatedComponent, filmsContainerEl);
-      twoTopRatedFilmsWithMeta.forEach((film) => {
-        this.#renderFilmCard(film, topRatedListEl);
+      const containerComponent = new FilmsExtraContainerView(extraFilmsSectionNames[key]);
+      const listEl = containerComponent.extrasWrapperEl;
+      render(containerComponent, filmsContainerEl);
+      value.forEach((film) => {
+        this.#renderFilmCard(film, listEl);
       });
-    }
+    });
+  };
 
-    if (twoMostCommentedFilmsWithMeta.length > 1) {
-      const mostCommentedComponent = new FilmsExtraContainerView('Most commented');
-      const mostCommentedListEl = mostCommentedComponent.extrasWrapperEl;
+  #hidePopup = () => {
+    document.body.classList.remove('hide-overflow');
+    remove(this.#popupComponent);
+  };
 
-      render(mostCommentedComponent, filmsContainerEl);
-      twoMostCommentedFilmsWithMeta.forEach((film) => {
-        this.#renderFilmCard(film, mostCommentedListEl);
-      });
+  #showPopup = (film, userDetails, comments) => {
+    this.#popupComponent = new PopupView(film, userDetails);
+    const commentsComponent = new CommentsView(comments);
+
+    render(this.#popupComponent, document.body);
+    render(commentsComponent, this.#popupComponent.commentsEl);
+    document.body.classList.add('hide-overflow');
+    this.#popupComponent.closeButtonClickHandler(this.#onCloseButtonClick);
+    document.addEventListener('keydown', this.#onEscKeyDown);
+  };
+
+  #onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      this.#hidePopup();
+      document.removeEventListener('keydown', this.#onEscKeyDown);
     }
+  };
+
+  #onCloseButtonClick = () => {
+    this.#hidePopup();
   };
 
   #renderFilmCard = ({ film, userDetails, comments: commentsIds }, container) => {
     const comments = getCommentsByIds(commentsIds, this.#comments);
     const filmComponent = new FilmCardView(film, userDetails, comments);
 
-    const bodyEl = document.querySelector('body');
-
-    const hidePopup = () => {
-      bodyEl.classList.remove('hide-overflow');
-      remove(this.#popupComponent);
-    };
-
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        hidePopup();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    const onCloseButtonClick = () => {
-      hidePopup();
-    };
-
-    const showPopup = () => {
-      this.#popupComponent = new PopupView(film, userDetails);
-      const commentsComponent = new CommentsView(comments);
-
-      render(this.#popupComponent, bodyEl);
-      render(commentsComponent, this.#popupComponent.commentsEl);
-      bodyEl.classList.add('hide-overflow');
-      this.#popupComponent.closeButtonClickHandler(onCloseButtonClick);
-      document.addEventListener('keydown', onEscKeyDown);
-    };
-
     const onFilmCardClick = () => {
       if (this.#popupComponent) {
         remove(this.#popupComponent);
       }
 
-      showPopup();
+      this.#showPopup(film, userDetails, comments);
     };
 
     filmComponent.setClickHandler(onFilmCardClick);
