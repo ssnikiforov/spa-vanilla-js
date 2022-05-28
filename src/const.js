@@ -75,4 +75,11 @@ const ExtraFilmsSectionNames = {
   MOST_COMMENTED: 'Most commented'
 };
 
-export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs, ExtraFilmsSectionNames };
+const FilterType = {
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
+};
+
+export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs, ExtraFilmsSectionNames, FilterType };
