@@ -1,13 +1,13 @@
 import AbstractView from '../framework/view/abstract-view';
 
-const filmsExtraContainerTemplate = (sectionName) =>
+const extraFilmsContainerTemplate = (sectionName) =>
   `<section class="films-list films-list--extra">
     <h2 class="films-list__title">${sectionName}</h2>
 
     <div class="films-list__container"></div>
   </section>`;
 
-export default class FilmsExtraContainerView extends AbstractView {
+export default class ExtraFilmsContainerView extends AbstractView {
   #sectionName = null;
 
   constructor(sectionName) {
@@ -20,7 +20,7 @@ export default class FilmsExtraContainerView extends AbstractView {
   }
 
   get template() {
-    return filmsExtraContainerTemplate(this.sectionName);
+    return extraFilmsContainerTemplate(this.sectionName);
   }
 
   get extrasWrapperEl() {

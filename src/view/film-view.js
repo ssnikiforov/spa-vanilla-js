@@ -2,7 +2,7 @@ import AbstractView from '../framework/view/abstract-view';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 import { getLimitedText, pluralizePhrase } from '../utils/common';
 
-const filmsCardTemplate = (film, userDetails, commentsCount) => {
+const filmTemplate = (film, userDetails, commentsCount) => {
   const {
     title,
     totalRating,
@@ -45,7 +45,7 @@ const filmsCardTemplate = (film, userDetails, commentsCount) => {
   </article>`;
 };
 
-export default class FilmCardView extends AbstractView {
+export default class FilmView extends AbstractView {
   #film = null;
   #userDetails = null;
   #comments = null;
@@ -58,7 +58,7 @@ export default class FilmCardView extends AbstractView {
   }
 
   get template() {
-    return filmsCardTemplate(this.#film, this.#userDetails, this.#comments.length);
+    return filmTemplate(this.#film, this.#userDetails, this.#comments.length);
   }
 
   setClickHandler = (callback) => {
