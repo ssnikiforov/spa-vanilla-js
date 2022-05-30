@@ -1,29 +1,17 @@
-import { createElement } from '../render';
-import { pluralizePhrase } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
+import { pluralizePhrase } from '../utils/common';
 
-const footerCounterTemplate = (length) => `<p>${pluralizePhrase('film', length)} inside</p>`;
+const footerCounterTemplate = (filmsCount) => `<p>${pluralizePhrase('film', filmsCount)} inside</p>`;
 
-export default class FooterCounterView {
-  #element = null;
+export default class FooterCounterView extends AbstractView {
   #films = null;
 
   constructor(films) {
+    super();
     this.#films = films;
   }
 
   get template() {
     return footerCounterTemplate(this.#films.size);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

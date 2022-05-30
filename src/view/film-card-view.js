@@ -1,7 +1,8 @@
-import { createElement } from '../render';
-import { getLimitedText, humanizeReleaseDate, humanizeRuntime, pluralizePhrase } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
+import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
+import { getLimitedText, pluralizePhrase } from '../utils/common';
 
-const filmsCardTemplate = (film, userDetails, { length }) => {
+const filmsCardTemplate = (film, userDetails, commentsCount) => {
   const {
     title,
     totalRating,
@@ -29,7 +30,7 @@ const filmsCardTemplate = (film, userDetails, { length }) => {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
-      <span class="film-card__comments">${pluralizePhrase('comment', length)}</span>
+      <span class="film-card__comments">${pluralizePhrase('comment', commentsCount)}</span>
     </a>
     <div class="film-card__controls">
       <button
@@ -44,31 +45,29 @@ const filmsCardTemplate = (film, userDetails, { length }) => {
   </article>`;
 };
 
-export default class FilmCardView {
+export default class FilmCardView extends AbstractView {
   #film = null;
   #userDetails = null;
   #comments = null;
-  #element = null;
 
   constructor(film, userDetails, comments) {
+    super();
     this.#film = film;
     this.#userDetails = userDetails;
     this.#comments = comments;
   }
 
   get template() {
-    return filmsCardTemplate(this.#film, this.#userDetails, this.#comments);
+    return filmsCardTemplate(this.#film, this.#userDetails, this.#comments.length);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.querySelector('a').addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

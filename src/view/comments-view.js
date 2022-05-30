@@ -1,5 +1,5 @@
-import { createElement } from '../render';
-import { humanizeCommentDate } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
+import { humanizeCommentDate } from '../utils/film';
 import { Emojis } from '../const';
 
 const commentsTemplate = (comments) => {
@@ -38,31 +38,15 @@ const commentsTemplate = (comments) => {
 </section>`;
 };
 
-export default class CommentsView {
-  #element = null;
+export default class CommentsView extends AbstractView {
   #comments = null;
 
   constructor(comments) {
+    super();
     this.#comments = comments;
   }
 
   get template() {
     return commentsTemplate(this.#comments);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  set element(element) {
-    this.#element = element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

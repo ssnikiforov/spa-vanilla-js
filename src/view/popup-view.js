@@ -1,5 +1,5 @@
-import { createElement } from '../render';
-import { humanizeReleaseDate, humanizeRuntime } from '../utils';
+import AbstractView from '../framework/view/abstract-view';
+import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 
 const popupTemplate = (film, userDetails) => {
   const renderFilmDetails = ({
@@ -106,12 +106,12 @@ const popupTemplate = (film, userDetails) => {
    </section>`;
 };
 
-export default class PopupView {
-  #element = null;
+export default class PopupView extends AbstractView {
   #film = null;
   #userDetails = null;
 
   constructor(film, userDetails) {
+    super();
     this.#film = film;
     this.#userDetails = userDetails;
   }
@@ -120,19 +120,21 @@ export default class PopupView {
     return popupTemplate(this.#film, this.#userDetails);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  get commentsEl() {
+    return this.element.querySelector('.film-details__bottom-container');
   }
 
-  set element(element) {
-    this.#element = element;
+  get closeButtonEl() {
+    return this.element.querySelector('.film-details__close-btn');
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  closeButtonClickHandler = (callback) => {
+    this._callback.closeButtonClick = callback;
+    this.closeButtonEl.addEventListener('click', this.#clickHandler);
+  };
+
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeButtonClick();
+  };
 }

@@ -1,4 +1,5 @@
-import { getRandomDate, getRandomValuesFromArray, getRandomText } from '../utils.js';
+import { getRandomDate, getRandomText } from '../utils/film.js';
+import { getRandomValuesFromArray } from '../utils/common';
 import { names, Emojis } from '../const.js';
 
 const generateEmoji = () => getRandomValuesFromArray(Object.values(Emojis), 1);

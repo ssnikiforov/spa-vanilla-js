@@ -4,7 +4,7 @@ import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
 import UserDetailsModel from './model/user-details-model';
 import { filmsWithMetaStorage, userDetailsStorage, commentsStorage } from './storage';
-import { createFilmWithMetaObject } from './utils';
+import { createFilmWithMetaObject } from './utils/film';
 
 // prepare data
 // TODO: refactor with Fabric pattern (патчит массив), добавляет нужные поля

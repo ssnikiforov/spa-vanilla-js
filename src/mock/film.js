@@ -1,11 +1,6 @@
-import {
-  getRandomNumber,
-  getRandomInteger,
-  getRandomValuesFromArray,
-  getRandomDate,
-  getRandomText
-} from '../utils.js';
+import { getRandomDate, getRandomText } from '../utils/film.js';
 import { names, FilmConsts } from '../const.js';
+import { getRandomInteger, getRandomNumber, getRandomValuesFromArray } from '../utils/common';
 
 const MAX_YEARS_GAP = -100;
 
