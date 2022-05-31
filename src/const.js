@@ -70,9 +70,16 @@ const ProfileRatings = {
   MOVIE_BUFF: 21,
 };
 
-const extraFilmsSectionNames = {
+const ExtraFilmsSectionNames = {
   TOP_RATED: 'Top rated',
   MOST_COMMENTED: 'Most commented'
 };
 
-export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs, extraFilmsSectionNames };
+const FilterType = {
+  ALL: 'All movies',
+  WATCHLIST: 'Watchlist',
+  HISTORY: 'History',
+  FAVORITES: 'Favorites',
+};
+
+export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs, ExtraFilmsSectionNames, FilterType };

@@ -1,13 +1,13 @@
 import FilmsContainerView from '../view/films-container-view';
 import ShowMoreView from '../view/show-more-view';
 import { remove, render } from '../framework/render';
-import FilmCardView from '../view/film-card-view';
-import FilmsExtraContainerView from '../view/films-extra-container-view';
+import FilmView from '../view/film-view';
+import ExtraFilmsContainerView from '../view/extra-films-container-view';
 import { getCommentsByIds, getTwoExtraFilmsIds } from '../utils/film';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import NoFilmView from '../view/no-film-view';
-import { extraFilmsSectionNames } from '../const';
+import { ExtraFilmsSectionNames } from '../const';
 
 const FILMS_COUNT_PER_STEP = 5;
 
@@ -77,7 +77,7 @@ export default class FilmsPresenter {
         return;
       }
 
-      const containerComponent = new FilmsExtraContainerView(extraFilmsSectionNames[key]);
+      const containerComponent = new ExtraFilmsContainerView(ExtraFilmsSectionNames[key]);
       const listEl = containerComponent.extrasWrapperEl;
       render(containerComponent, filmsContainerEl);
       value.forEach((film) => {
@@ -116,7 +116,7 @@ export default class FilmsPresenter {
 
   #renderFilmCard = ({ film, userDetails, comments: commentsIds }, container) => {
     const comments = getCommentsByIds(commentsIds, this.#comments);
-    const filmComponent = new FilmCardView(film, userDetails, comments);
+    const filmComponent = new FilmView(film, userDetails, comments);
 
     const onFilmCardClick = () => {
       if (this.#popupComponent) {
