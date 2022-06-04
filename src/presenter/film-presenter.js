@@ -40,7 +40,56 @@ export default class FilmPresenter {
     }
 
     this.#popupComponent.updateControlButtons(userDetails);
-    this.#setPopupHandlers();
+    this.#setControlButtonsHandlers(this.#popupComponent);
+  };
+
+  #destroyPopup = () => {
+    document.body.classList.remove('hide-overflow');
+    remove(this.#popupComponent);
+    remove(this.#commentsComponent);
+  };
+
+  #renderPopup = () => {
+    let popupComponent = new PopupView(this.#film, this.#userDetails);
+    this.#commentsComponent = new CommentsView(this.#comments);
+
+    document.body.classList.add('hide-overflow');
+
+    document.addEventListener('keydown', this.#handleEscKeyDown);
+    popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
+    popupComponent = this.#setControlButtonsHandlers(popupComponent);
+    this.#popupComponent = popupComponent;
+
+    render(this.#popupComponent, document.body);
+    render(this.#commentsComponent, this.#popupComponent.commentsEl);
+  };
+
+  #getNewFilmComponent = () => {
+    const handleOpenPopupClick = () => {
+      if (this.#popupComponent) {
+        this.#destroyPopup();
+      }
+
+      this.#renderPopup(this.#film, this.#userDetails, this.#comments);
+    };
+
+    let newFilmComponent = new FilmView(this.#film, this.#userDetails, this.#comments);
+    newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
+    newFilmComponent = this.#setControlButtonsHandlers(newFilmComponent);
+    this.#filmComponent = newFilmComponent;
+
+    return newFilmComponent;
+  };
+
+  #renderFilm = () => {
+    const existingFilmComponent = this.#filmComponent;
+    const newFilmComponent = this.#getNewFilmComponent();
+
+    if (existingFilmComponent && this.#container.contains(existingFilmComponent.element)) {
+      replace(newFilmComponent, existingFilmComponent);
+    } else {
+      render(newFilmComponent, this.#container);
+    }
   };
 
   #handleEscKeyDown = (evt) => {
@@ -82,59 +131,11 @@ export default class FilmPresenter {
     });
   };
 
+  #setControlButtonsHandlers = (component) => {
+    component.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
+    component.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
+    component.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
 
-  #destroyPopup = () => {
-    document.body.classList.remove('hide-overflow');
-    remove(this.#popupComponent);
-    remove(this.#commentsComponent);
-  };
-
-  #setPopupHandlers = () => {
-    this.#popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
-    this.#popupComponent.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
-    this.#popupComponent.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
-    this.#popupComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
-  };
-
-  #renderPopup = () => {
-    this.#popupComponent = new PopupView(this.#film, this.#userDetails);
-    this.#commentsComponent = new CommentsView(this.#comments);
-
-    document.body.classList.add('hide-overflow');
-
-    document.addEventListener('keydown', this.#handleEscKeyDown);
-    this.#setPopupHandlers();
-    render(this.#popupComponent, document.body);
-    render(this.#commentsComponent, this.#popupComponent.commentsEl);
-  };
-
-  #getNewFilmComponent = () => {
-    const handleOpenPopupClick = () => {
-      if (this.#popupComponent) {
-        this.#destroyPopup();
-      }
-
-      this.#renderPopup(this.#film, this.#userDetails, this.#comments);
-    };
-
-    const newFilmComponent = new FilmView(this.#film, this.#userDetails, this.#comments);
-    newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
-    newFilmComponent.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
-    newFilmComponent.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
-    newFilmComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
-    this.#filmComponent = newFilmComponent;
-
-    return newFilmComponent;
-  };
-
-  #renderFilm = () => {
-    const existingFilmComponent = this.#filmComponent;
-    const newFilmComponent = this.#getNewFilmComponent();
-
-    if (existingFilmComponent && this.#container.contains(existingFilmComponent.element)) {
-      replace(newFilmComponent, existingFilmComponent);
-    } else {
-      render(newFilmComponent, this.#container);
-    }
+    return component;
   };
 }
