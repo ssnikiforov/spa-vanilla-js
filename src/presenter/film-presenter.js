@@ -87,7 +87,7 @@ export default class FilmPresenter {
     this.#popupComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
   };
 
-  updatePopupControls = ({ userDetails }) => {
+  updatePopupControls = (userDetails) => {
     if (!this.#popupComponent) {
       return;
     }

@@ -63,7 +63,7 @@ export default class BoardPresenter {
     const filmPresentersMap = this.#filmPresenters[updatedFilmWithMeta.id];
     filmPresentersMap.forEach((filmPresenter, container) => {
       filmPresenter.init(updatedFilmWithMeta, container);
-      filmPresenter.updatePopupControls(updatedFilmWithMeta);
+      filmPresenter.updatePopupControls(updatedFilmWithMeta.userDetails);
     });
   };
 
