@@ -34,6 +34,15 @@ export default class FilmPresenter {
     this.#renderFilm();
   };
 
+  updatePopupControls = (userDetails) => {
+    if (!this.#popupComponent) {
+      return;
+    }
+
+    this.#popupComponent.updateControlButtons(userDetails);
+    this.#setPopupHandlers();
+  };
+
   #handleEscKeyDown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
@@ -85,15 +94,6 @@ export default class FilmPresenter {
     this.#popupComponent.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
     this.#popupComponent.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
     this.#popupComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
-  };
-
-  updatePopupControls = (userDetails) => {
-    if (!this.#popupComponent) {
-      return;
-    }
-
-    this.#popupComponent.updateControlButtons(userDetails);
-    this.#setPopupHandlers();
   };
 
   #renderPopup = () => {

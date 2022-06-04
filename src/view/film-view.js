@@ -66,20 +66,10 @@ export default class FilmView extends AbstractView {
     this.element.querySelector('a').addEventListener('click', this.#openPopupHandler);
   };
 
-  #openPopupHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.openPopup();
-  };
-
   setToggleWatchlistHandler = (callback) => {
     this._callback.toggleWatchlist = callback;
     const button = this.element.querySelector('.film-card__controls-item--add-to-watchlist');
     button.addEventListener('click', this.#toggleWatchlistHandler);
-  };
-
-  #toggleWatchlistHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.toggleWatchlist();
   };
 
   setToggleAlreadyWatchedHandler = (callback) => {
@@ -88,15 +78,25 @@ export default class FilmView extends AbstractView {
     button.addEventListener('click', this.#toggleAlreadyWatchedHandler);
   };
 
-  #toggleAlreadyWatchedHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.toggleAlreadyWatched();
-  };
-
   setToggleFavoriteHandler = (callback) => {
     this._callback.toggleFavorite = callback;
     const button = this.element.querySelector('.film-card__controls-item--favorite');
     button.addEventListener('click', this.#toggleFavoriteHandler);
+  };
+
+  #openPopupHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openPopup();
+  };
+
+  #toggleWatchlistHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toggleWatchlist();
+  };
+
+  #toggleAlreadyWatchedHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toggleAlreadyWatched();
   };
 
   #toggleFavoriteHandler = (evt) => {

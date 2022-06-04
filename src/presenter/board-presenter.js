@@ -24,11 +24,6 @@ export default class BoardPresenter {
     this.#commentsStorage = Array.from(commentsStorage.values());
   }
 
-  #handleFilmChange = (updatedFilm) => {
-    this.#films = updateItem(this.#films, updatedFilm);
-    this.#reRenderFilm(updatedFilm);
-  };
-
   init = () => {
     this.#handlers = this.#handleFilmChange;
     this.#renderBoard();
@@ -127,5 +122,10 @@ export default class BoardPresenter {
     render(this.#filmsContainerComponent, document.querySelector('.main'));
     this.#renderFilmsList();
     this.#renderExtra();
+  };
+
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#reRenderFilm(updatedFilm);
   };
 }
