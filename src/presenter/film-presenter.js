@@ -80,6 +80,22 @@ export default class FilmPresenter {
     remove(this.#commentsComponent);
   };
 
+  #setPopupHandlers = () => {
+    this.#popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
+    this.#popupComponent.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
+    this.#popupComponent.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
+    this.#popupComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
+  };
+
+  updatePopupControls = ({ userDetails }) => {
+    if (!this.#popupComponent) {
+      return;
+    }
+
+    this.#popupComponent.updateControlButtons(userDetails);
+    this.#setPopupHandlers();
+  };
+
   #renderPopup = () => {
     this.#popupComponent = new PopupView(this.#film, this.#userDetails);
     this.#commentsComponent = new CommentsView(this.#comments);
@@ -87,10 +103,7 @@ export default class FilmPresenter {
     document.body.classList.add('hide-overflow');
 
     document.addEventListener('keydown', this.#handleEscKeyDown);
-    this.#popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
-    this.#popupComponent.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
-    this.#popupComponent.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
-    this.#popupComponent.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
+    this.#setPopupHandlers();
     render(this.#popupComponent, document.body);
     render(this.#commentsComponent, this.#popupComponent.commentsEl);
   };
