@@ -5,6 +5,7 @@ import NoFilmView from '../view/no-film-view';
 import FilmPresenter from './film-presenter';
 import { remove, render } from '../framework/render';
 import { getTwoExtraFilmsIds } from '../utils/film';
+import { updateItem } from '../utils/common';
 import { ExtraFilmsSectionNames } from '../const';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -15,13 +16,21 @@ export default class BoardPresenter {
   #filmsContainerComponent = new FilmsContainerView();
   #showMoreButtonComponent = null;
   #renderedFilmsCount = FILMS_COUNT_PER_STEP;
+  #filmPresenters = {};
+  #handlers = null;
 
   constructor(filmsWithMetaStorage, commentsStorage) {
     this.#films = Array.from(filmsWithMetaStorage.values());
     this.#commentsStorage = Array.from(commentsStorage.values());
   }
 
+  #handleFilmChange = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#reRenderFilm(updatedFilm);
+  };
+
   init = () => {
+    this.#handlers = this.#handleFilmChange;
     this.#renderBoard();
   };
 
@@ -29,16 +38,44 @@ export default class BoardPresenter {
     render(new NoFilmView(), document.querySelector('.main'));
   };
 
-  #renderFilm = ({ film, userDetails, comments: commentsIds }, container) => {
-    const filmPresenter = new FilmPresenter(container, this.#commentsStorage);
-    filmPresenter.init(film, userDetails, commentsIds);
+  #getFilmPresenter = (container, filmId, handlers) => {
+    const newFilmPresenter = new FilmPresenter(container, filmId, handlers);
+
+    const existingPresentersMap = this.#filmPresenters[filmId];
+    if (!existingPresentersMap) {
+      this.#filmPresenters[filmId] = new Map();
+      this.#filmPresenters[filmId].set(container, newFilmPresenter);
+
+      return newFilmPresenter;
+    }
+
+    const existingPresenter = existingPresentersMap.get(container);
+    if (!existingPresenter) {
+      existingPresentersMap.set(container, newFilmPresenter);
+
+      return newFilmPresenter;
+    }
+
+    return existingPresenter;
+  };
+
+  #reRenderFilm = (updatedFilmWithMeta) => {
+    const filmPresentersMap = this.#filmPresenters[updatedFilmWithMeta.id];
+    filmPresentersMap.forEach((filmPresenter, container) => {
+      filmPresenter.init(updatedFilmWithMeta, container);
+    });
+  };
+
+  #renderFilm = (filmWithMeta, container, handlers) => {
+    const filmPresenter = this.#getFilmPresenter(container, filmWithMeta.id, handlers);
+    filmPresenter.init(filmWithMeta);
   };
 
   #renderShowMoreButton = () => {
     const handleShowMoreButtonClick = () => {
       this.#films
         .slice(this.#renderedFilmsCount, this.#renderedFilmsCount + FILMS_COUNT_PER_STEP)
-        .forEach((film) => this.#renderFilm(film, this.#filmsContainerComponent.filmsListEl));
+        .forEach((film) => this.#renderFilm(film, this.#filmsContainerComponent.filmsListEl, this.#handlers));
 
       this.#renderedFilmsCount += FILMS_COUNT_PER_STEP;
 
@@ -55,33 +92,27 @@ export default class BoardPresenter {
     }
   };
 
-  #renderFilmsContainer = () => {
-    render(this.#filmsContainerComponent, document.querySelector('.main'));
-  };
-
   #renderFilmsList = () => {
     for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_PER_STEP); i++) {
-      this.#renderFilm(this.#films[i], this.#filmsContainerComponent.filmsListEl);
+      this.#renderFilm(this.#films[i], this.#filmsContainerComponent.filmsListEl, this.#handlers);
     }
     this.#renderShowMoreButton();
   };
 
   #renderExtra = () => {
-    const filmsContainerEl = this.#filmsContainerComponent.element;
     const extraFilms = {
-      topRated: getTwoExtraFilmsIds(this.#films, 'film', 'totalRating'),
-      mostCommented: getTwoExtraFilmsIds(this.#films, 'comments', 'length')
+      TOP_RATED: getTwoExtraFilmsIds(this.#films, 'film', 'totalRating'),
+      MOST_COMMENTED: getTwoExtraFilmsIds(this.#films, 'comments', 'length')
     };
 
     Object.entries(extraFilms).forEach(([key, value]) => {
       if (!value.length) {
         return;
       }
-
-      const containerComponent = new ExtraFilmsContainerView(ExtraFilmsSectionNames[key]);
-      render(containerComponent, filmsContainerEl);
+      const extrasContainerComponent = new ExtraFilmsContainerView(ExtraFilmsSectionNames[key]);
+      render(extrasContainerComponent, this.#filmsContainerComponent.element);
       value.forEach((film) => {
-        this.#renderFilm(film, containerComponent.extrasWrapperEl);
+        this.#renderFilm(film, extrasContainerComponent.extrasWrapperEl, this.#handlers);
       });
     });
   };
@@ -92,7 +123,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#renderFilmsContainer();
+    render(this.#filmsContainerComponent, document.querySelector('.main'));
     this.#renderFilmsList();
     this.#renderExtra();
   };
