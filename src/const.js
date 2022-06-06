@@ -82,4 +82,20 @@ const FilterType = {
   FAVORITES: 'Favorites',
 };
 
-export { names, DayJsGaps, Emojis, FilmConsts, ProfileRatings, DayDiffs, ExtraFilmsSectionNames, FilterType };
+const SortType = {
+  DEFAULT: 'default',
+  DATE_DOWN: 'date-down',
+  RATING_DOWN: 'rating-down',
+};
+
+export {
+  names,
+  DayJsGaps,
+  Emojis,
+  FilmConsts,
+  ProfileRatings,
+  DayDiffs,
+  ExtraFilmsSectionNames,
+  FilterType,
+  SortType,
+};

@@ -43,7 +43,7 @@ export default class FilmPresenter {
     this.#setControlButtonsHandlers(this.#popupComponent);
   };
 
-  #destroyPopup = () => {
+  destroyPopup = () => {
     document.body.classList.remove('hide-overflow');
     remove(this.#popupComponent);
     remove(this.#commentsComponent);
@@ -67,7 +67,7 @@ export default class FilmPresenter {
   #getNewFilmComponent = () => {
     const handleOpenPopupClick = () => {
       if (this.#popupComponent) {
-        this.#destroyPopup();
+        this.destroyPopup();
       }
 
       this.#renderPopup(this.#film, this.#userDetails, this.#comments);
@@ -96,12 +96,12 @@ export default class FilmPresenter {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
       document.removeEventListener('keydown', this.#handleEscKeyDown);
-      this.#destroyPopup();
+      this.destroyPopup();
     }
   };
 
   #handleCloseButtonClick = () => {
-    this.#destroyPopup();
+    this.destroyPopup();
   };
 
   #handleToggleWatchlistClick = () => {
@@ -132,9 +132,9 @@ export default class FilmPresenter {
   };
 
   #setControlButtonsHandlers = (component) => {
-    component.setToggleWatchlistHandler(this.#handleToggleWatchlistClick);
-    component.setToggleAlreadyWatchedHandler(this.#handleToggleAlreadyWatchedClick);
-    component.setToggleFavoriteHandler(this.#handleToggleFavoriteClick);
+    component.setWatchlistToggleHandler(this.#handleToggleWatchlistClick);
+    component.setAlreadyWatchedToggleHandler(this.#handleToggleAlreadyWatchedClick);
+    component.setFavoriteToggleHandler(this.#handleToggleFavoriteClick);
 
     return component;
   };

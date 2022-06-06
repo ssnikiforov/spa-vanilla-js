@@ -148,22 +148,22 @@ export default class PopupView extends AbstractView {
     this.closeButtonEl.addEventListener('click', this.#closeButtonClickHandler);
   };
 
-  setToggleWatchlistHandler = (callback) => {
-    this._callback.toggleWatchlist = callback;
+  setWatchlistToggleHandler = (callback) => {
+    this._callback.watchlistToggle = callback;
     const button = this.element.querySelector('.film-details__control-button--watchlist');
-    button.addEventListener('click', this.#toggleWatchlistHandler);
+    button.addEventListener('click', this.#watchlistToggleHandler);
   };
 
-  setToggleAlreadyWatchedHandler = (callback) => {
-    this._callback.toggleAlreadyWatched = callback;
+  setAlreadyWatchedToggleHandler = (callback) => {
+    this._callback.alreadyWatchedToggle = callback;
     const button = this.element.querySelector('.film-details__control-button--watched');
-    button.addEventListener('click', this.#toggleAlreadyWatchedHandler);
+    button.addEventListener('click', this.#alreadyWatchedToggleHandler);
   };
 
-  setToggleFavoriteHandler = (callback) => {
-    this._callback.toggleFavorite = callback;
+  setFavoriteToggleHandler = (callback) => {
+    this._callback.favoriteToggle = callback;
     const button = this.element.querySelector('.film-details__control-button--favorite');
-    button.addEventListener('click', this.#toggleFavoriteHandler);
+    button.addEventListener('click', this.#favoriteToggleHandler);
   };
 
   #closeButtonClickHandler = (evt) => {
@@ -171,18 +171,18 @@ export default class PopupView extends AbstractView {
     this._callback.closeButtonClick();
   };
 
-  #toggleWatchlistHandler = (evt) => {
+  #watchlistToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleWatchlist();
+    this._callback.watchlistToggle();
   };
 
-  #toggleAlreadyWatchedHandler = (evt) => {
+  #alreadyWatchedToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleAlreadyWatched();
+    this._callback.alreadyWatchedToggle();
   };
 
-  #toggleFavoriteHandler = (evt) => {
+  #favoriteToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleFavorite();
+    this._callback.favoriteToggle();
   };
 }
