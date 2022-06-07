@@ -61,13 +61,46 @@ export default class FilmView extends AbstractView {
     return filmTemplate(this.#film, this.#userDetails, this.#comments.length);
   }
 
-  setClickHandler = (callback) => {
-    this._callback.click = callback;
-    this.element.querySelector('a').addEventListener('click', this.#clickHandler);
+  setOpenPopupHandler = (callback) => {
+    this._callback.openPopup = callback;
+    this.element.querySelector('a').addEventListener('click', this.#openPopupHandler);
   };
 
-  #clickHandler = (evt) => {
+  setToggleWatchlistHandler = (callback) => {
+    this._callback.toggleWatchlist = callback;
+    const button = this.element.querySelector('.film-card__controls-item--add-to-watchlist');
+    button.addEventListener('click', this.#toggleWatchlistHandler);
+  };
+
+  setToggleAlreadyWatchedHandler = (callback) => {
+    this._callback.toggleAlreadyWatched = callback;
+    const button = this.element.querySelector('.film-card__controls-item--mark-as-watched');
+    button.addEventListener('click', this.#toggleAlreadyWatchedHandler);
+  };
+
+  setToggleFavoriteHandler = (callback) => {
+    this._callback.toggleFavorite = callback;
+    const button = this.element.querySelector('.film-card__controls-item--favorite');
+    button.addEventListener('click', this.#toggleFavoriteHandler);
+  };
+
+  #openPopupHandler = (evt) => {
     evt.preventDefault();
-    this._callback.click();
+    this._callback.openPopup();
+  };
+
+  #toggleWatchlistHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toggleWatchlist();
+  };
+
+  #toggleAlreadyWatchedHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toggleAlreadyWatched();
+  };
+
+  #toggleFavoriteHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.toggleFavorite();
   };
 }

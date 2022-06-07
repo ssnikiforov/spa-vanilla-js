@@ -1,5 +1,5 @@
 import CommonPresenter from './presenter/common-presenter';
-import FilmsPresenter from './presenter/films-presenter';
+import BoardPresenter from './presenter/board-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
 import UserDetailsModel from './model/user-details-model';
@@ -25,7 +25,7 @@ films.forEach((film) => {
 });
 
 const commonPresenter = new CommonPresenter(filmsWithMetaStorage, userDetailsStorage);
-const filmsPresenter = new FilmsPresenter(filmsWithMetaStorage, commentsStorage);
+const filmsPresenter = new BoardPresenter(filmsWithMetaStorage, commentsStorage);
 
 commonPresenter.init();
 filmsPresenter.init();
