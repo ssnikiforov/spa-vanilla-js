@@ -84,6 +84,42 @@ const getTwoExtraFilmsIds = (filmsWithMeta, criteria, subcriteria) => {
   return Array.from(twoMaxValuesWithIdsMap.keys()).map((index) => filmsWithMeta[index]);
 };
 
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const getWeightForRating = (ratingA, ratingB) => {
+  if (ratingA > ratingB) {
+    return -1;
+  }
+
+  if (ratingA < ratingB) {
+    return 1;
+  }
+
+  return 0;
+};
+
+const sortFilmsDateDown = ({ film: filmA }, { film: filmB }) => {
+  const weight = getWeightForNullDate(filmA.release.date, filmB.release.date);
+
+  return weight ?? dayjs(filmB.release.date).diff(dayjs(filmA.release.date));
+};
+
+const sortFilmsRatingDown = ({ film: filmA }, { film: filmB }) => getWeightForRating(filmA.totalRating, filmB.totalRating);
+
 export {
   getRandomDate,
   getRandomText,
@@ -94,4 +130,6 @@ export {
   getProfileRatingName,
   getCommentsByIds,
   getTwoExtraFilmsIds,
+  sortFilmsDateDown,
+  sortFilmsRatingDown,
 };

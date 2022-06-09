@@ -1,9 +1,8 @@
-import CommonPresenter from './presenter/common-presenter';
 import BoardPresenter from './presenter/board-presenter';
 import FilmsModel from './model/films-model';
 import CommentsModel from './model/comments-model';
 import UserDetailsModel from './model/user-details-model';
-import { filmsWithMetaStorage, userDetailsStorage, commentsStorage } from './storage';
+import { commentsStorage, filmsWithMetaStorage, userDetailsStorage } from './storage';
 import { createFilmWithMetaObject } from './utils/film';
 
 // prepare data
@@ -24,8 +23,5 @@ films.forEach((film) => {
   comments.forEach((comment) => commentsStorage.set(comment.id, comment));
 });
 
-const commonPresenter = new CommonPresenter(filmsWithMetaStorage, userDetailsStorage);
-const filmsPresenter = new BoardPresenter(filmsWithMetaStorage, commentsStorage);
-
-commonPresenter.init();
+const filmsPresenter = new BoardPresenter(filmsWithMetaStorage, userDetailsStorage, commentsStorage);
 filmsPresenter.init();

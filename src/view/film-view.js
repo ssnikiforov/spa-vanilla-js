@@ -26,7 +26,7 @@ const filmTemplate = (film, userDetails, commentsCount) => {
       <p class="film-card__info">
         <span class="film-card__year">${humanizeReleaseDate(release.date)}</span>
         <span class="film-card__duration">${humanizeRuntime(runtime)}</span>
-        <span class="film-card__genre">${genre}</span>
+        <span class="film-card__genre">${genre.join(', ')}</span>
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
@@ -66,22 +66,22 @@ export default class FilmView extends AbstractView {
     this.element.querySelector('a').addEventListener('click', this.#openPopupHandler);
   };
 
-  setToggleWatchlistHandler = (callback) => {
-    this._callback.toggleWatchlist = callback;
+  setWatchlistToggleHandler = (callback) => {
+    this._callback.watchlistToggle = callback;
     const button = this.element.querySelector('.film-card__controls-item--add-to-watchlist');
-    button.addEventListener('click', this.#toggleWatchlistHandler);
+    button.addEventListener('click', this.#watchlistToggleHandler);
   };
 
-  setToggleAlreadyWatchedHandler = (callback) => {
-    this._callback.toggleAlreadyWatched = callback;
+  setAlreadyWatchedToggleHandler = (callback) => {
+    this._callback.alreadyWatchedToggle = callback;
     const button = this.element.querySelector('.film-card__controls-item--mark-as-watched');
-    button.addEventListener('click', this.#toggleAlreadyWatchedHandler);
+    button.addEventListener('click', this.#alreadyWatchedToggleHandler);
   };
 
-  setToggleFavoriteHandler = (callback) => {
-    this._callback.toggleFavorite = callback;
+  setFavoriteToggleHandler = (callback) => {
+    this._callback.favoriteToggle = callback;
     const button = this.element.querySelector('.film-card__controls-item--favorite');
-    button.addEventListener('click', this.#toggleFavoriteHandler);
+    button.addEventListener('click', this.#favoriteToggleHandler);
   };
 
   #openPopupHandler = (evt) => {
@@ -89,18 +89,18 @@ export default class FilmView extends AbstractView {
     this._callback.openPopup();
   };
 
-  #toggleWatchlistHandler = (evt) => {
+  #watchlistToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleWatchlist();
+    this._callback.watchlistToggle();
   };
 
-  #toggleAlreadyWatchedHandler = (evt) => {
+  #alreadyWatchedToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleAlreadyWatched();
+    this._callback.alreadyWatchedToggle();
   };
 
-  #toggleFavoriteHandler = (evt) => {
+  #favoriteToggleHandler = (evt) => {
     evt.preventDefault();
-    this._callback.toggleFavorite();
+    this._callback.favoriteToggle();
   };
 }
