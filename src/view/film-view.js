@@ -30,7 +30,6 @@ const filmTemplate = (film, userDetails, commentsCount) => {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
-      <span class="film-card__comments">${pluralizePhrase('comment', commentsCount)}</span>
     </a>
     <div class="film-card__controls">
       <button
@@ -59,6 +58,10 @@ export default class FilmView extends AbstractView {
 
   get template() {
     return filmTemplate(this.#film, this.#userDetails, this.#comments.length);
+  }
+
+  get filmCardLink() {
+    return this.element.querySelector('.film-card__link')
   }
 
   setOpenPopupHandler = (callback) => {
