@@ -4,9 +4,7 @@ import { Emojis } from '../const';
 
 const ENTER_KEY_CODE = 13;
 
-const selectedEmojiForNewCommentTemplate = (emotion) => {
-  return `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
-};
+const selectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
 
 const commentsTemplate = (commentsObj) => {
   const comments = Object.values(commentsObj).filter((value) => typeof value === 'object');
@@ -64,23 +62,23 @@ export default class CommentsView extends AbstractStatefulView {
 
   get #form() {
     return this.element.querySelector('.film-details__inner');
-  };
+  }
 
   get #newCommentWrapper() {
     return this.element.querySelector('.film-details__new-comment');
-  };
+  }
 
   get #newCommentInput() {
     return this.#newCommentWrapper.querySelector('.film-details__comment-input');
-  };
+  }
 
   get #selectedEmojiWrapper() {
     return this.#newCommentWrapper.querySelector('.film-details__add-emoji-label');
-  };
+  }
 
   get #emojisList() {
     return this.#newCommentWrapper.querySelector('.film-details__emoji-list');
-  };
+  }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;

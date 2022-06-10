@@ -79,7 +79,7 @@ export default class FilmPresenter {
       this.#renderPopup(this.#film, this.#userDetails, this.#comments);
     };
 
-    let newFilmComponent = new FilmView(this.#film, this.#userDetails, this.#comments);
+    let newFilmComponent = new FilmView(this.#film, this.#userDetails);
     newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
     newFilmComponent = this.#setControlButtonsHandlers(newFilmComponent);
     this.#filmCardComponent = newFilmComponent;
