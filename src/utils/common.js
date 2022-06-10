@@ -53,7 +53,7 @@ const getTwoMaxValuesWithIdsFromMap = (map) => {
     let value = pair[1];
     value = Number(value);
 
-    if (value > max) {
+    if (value >= max) {
       [secondMax, max] = [max, value]; // save previous max
       [secondMaxIndex, maxIndex] = [maxIndex, id];
 
