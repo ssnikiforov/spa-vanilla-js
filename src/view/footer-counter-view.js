@@ -12,6 +12,6 @@ export default class FooterCounterView extends AbstractView {
   }
 
   get template() {
-    return footerCounterTemplate(this.#films.size);
+    return footerCounterTemplate(this.#films.length);
   }
 }
