@@ -1,8 +1,10 @@
 import FilmView from '../view/film-view';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
+import FilmCommentsCounterView from '../view/film-comments-counter-view';
 import { remove, render, replace } from '../framework/render';
 import { getCommentsByIds } from '../utils/film';
+import { getMaxNumberFromMapByProperty } from '../utils/common';
 import { commentsStorage } from '../storage';
 
 export default class FilmPresenter {
@@ -14,14 +16,17 @@ export default class FilmPresenter {
   #changeData = null;
 
   #container = null;
-  #filmComponent = null;
-  #popupComponent = null;
-  #commentsComponent = null;
 
-  constructor(container, id, handlers) {
+  #filmCardComponent = null;
+  #filmCardCommentsCounterComponent = null;
+
+  #popupComponent = null;
+  #popupCommentsComponent = null;
+
+  constructor(container, id, changeData) {
     this.#container = container;
     this.#id = id;
-    this.#changeData = handlers;
+    this.#changeData = changeData;
   }
 
   init = ({ film, userDetails, comments: commentsIds }, updatedFilmContainer = null) => {
@@ -46,12 +51,12 @@ export default class FilmPresenter {
   destroyPopup = () => {
     document.body.classList.remove('hide-overflow');
     remove(this.#popupComponent);
-    remove(this.#commentsComponent);
+    remove(this.#popupCommentsComponent);
   };
 
   #renderPopup = () => {
     let popupComponent = new PopupView(this.#film, this.#userDetails);
-    this.#commentsComponent = new CommentsView(this.#comments);
+    this.#popupCommentsComponent = new CommentsView(this.#comments, getMaxNumberFromMapByProperty(commentsStorage, 'id'), this.#handleChangeCommentsInner);
 
     document.body.classList.add('hide-overflow');
 
@@ -59,12 +64,13 @@ export default class FilmPresenter {
     popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
     popupComponent = this.#setControlButtonsHandlers(popupComponent);
     this.#popupComponent = popupComponent;
+    this.#popupCommentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
 
     render(this.#popupComponent, document.body);
-    render(this.#commentsComponent, this.#popupComponent.commentsEl);
+    render(this.#popupCommentsComponent, this.#popupComponent.commentsEl);
   };
 
-  #getNewFilmComponent = () => {
+  #getNewFilmCardComponent = () => {
     const handleOpenPopupClick = () => {
       if (this.#popupComponent) {
         this.destroyPopup();
@@ -76,20 +82,34 @@ export default class FilmPresenter {
     let newFilmComponent = new FilmView(this.#film, this.#userDetails, this.#comments);
     newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
     newFilmComponent = this.#setControlButtonsHandlers(newFilmComponent);
-    this.#filmComponent = newFilmComponent;
+    this.#filmCardComponent = newFilmComponent;
 
     return newFilmComponent;
   };
 
-  #renderFilm = () => {
-    const existingFilmComponent = this.#filmComponent;
-    const newFilmComponent = this.#getNewFilmComponent();
+  #renderFilmCardCommentsCounter = (comments) => {
+    const existingFilmCardCommentsCounterComponent = this.#filmCardCommentsCounterComponent;
+    this.#filmCardCommentsCounterComponent = new FilmCommentsCounterView(comments);
 
-    if (existingFilmComponent && this.#container.contains(existingFilmComponent.element)) {
-      replace(newFilmComponent, existingFilmComponent);
+    if (existingFilmCardCommentsCounterComponent
+      && this.#filmCardComponent.element.contains(existingFilmCardCommentsCounterComponent.element)) {
+      replace(this.#filmCardCommentsCounterComponent, existingFilmCardCommentsCounterComponent);
     } else {
-      render(newFilmComponent, this.#container);
+      render(this.#filmCardCommentsCounterComponent, this.#filmCardComponent.filmCardLink);
     }
+  };
+
+  #renderFilm = () => {
+    const existingFilmCardComponent = this.#filmCardComponent;
+    const newFilmCardComponent = this.#getNewFilmCardComponent();
+
+    if (existingFilmCardComponent && this.#container.contains(existingFilmCardComponent.element)) {
+      replace(newFilmCardComponent, existingFilmCardComponent);
+    } else {
+      render(newFilmCardComponent, this.#container);
+    }
+
+    this.#renderFilmCardCommentsCounter(this.#comments);
   };
 
   #handleEscKeyDown = (evt) => {
@@ -127,6 +147,30 @@ export default class FilmPresenter {
       id: this.#id,
       film: this.#film,
       userDetails: { ...this.#userDetails, favorite: !this.#userDetails.favorite },
+      comments: this.#commentsIds,
+    });
+  };
+
+  #handleChangeCommentsInner = (updatedComments) => {
+    this.#comments = updatedComments;
+    updatedComments.forEach((comment) => commentsStorage.set(comment.id, comment));
+
+    this.#commentsIds = this.#comments.map(({ id }) => id);
+
+    const existingCommentComponent = this.#popupCommentsComponent;
+    this.#popupCommentsComponent = new CommentsView(this.#comments, getMaxNumberFromMapByProperty(commentsStorage, 'id'));
+    this.#popupCommentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
+    replace(this.#popupCommentsComponent, existingCommentComponent);
+
+    this.#renderFilmCardCommentsCounter(this.#comments);
+    this.#handleChangeCommentsForBoard();
+  };
+
+  #handleChangeCommentsForBoard = () => {
+    this.#changeData({
+      id: this.#id,
+      film: this.#film,
+      userDetails: this.#userDetails,
       comments: this.#commentsIds,
     });
   };

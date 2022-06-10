@@ -80,6 +80,13 @@ const updateItem = (items, update) => {
   ];
 };
 
+const getMaxNumberFromMapByProperty = (objectsCollection, propertyName) => {
+  const objects = Array.from(objectsCollection.values());
+  const max = Math.max(...objects.map((object) => object[propertyName]));
+
+  return Number.isFinite(max) ? max : 0;
+};
+
 export {
   getRandomNumber,
   getRandomInteger,
@@ -88,4 +95,5 @@ export {
   pluralizePhrase,
   getTwoMaxValuesWithIdsFromMap,
   updateItem,
+  getMaxNumberFromMapByProperty,
 };
