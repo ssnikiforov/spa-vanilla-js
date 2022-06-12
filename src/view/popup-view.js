@@ -94,16 +94,14 @@ const popupTemplate = (film, userDetails) => {
   </div>`;
 
   return `<section class="film-details">
-    <form class="film-details__inner" action="" method="get">
-      <div class="film-details__top-container">
-        <div class="film-details__close">
-          <button class="film-details__close-btn" type="button">close</button>
-        </div>
-        ${getFilmDetailsHtml(film)}
-        ${getControlsHtml(userDetails)}
+    <div class="film-details__top-container">
+      <div class="film-details__close">
+        <button class="film-details__close-btn" type="button">close</button>
       </div>
-      <div class="film-details__bottom-container"></div>
-    </form>
+      ${getFilmDetailsHtml(film)}
+      ${getControlsHtml(userDetails)}
+    </div>
+    <div class="film-details__bottom-container"></div>
    </section>`;
 };
 

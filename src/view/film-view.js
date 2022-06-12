@@ -1,8 +1,8 @@
 import AbstractView from '../framework/view/abstract-view';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
-import { getLimitedText, pluralizePhrase } from '../utils/common';
+import { getLimitedText } from '../utils/common';
 
-const filmTemplate = (film, userDetails, commentsCount) => {
+const filmTemplate = (film, userDetails) => {
   const {
     title,
     totalRating,
@@ -30,7 +30,6 @@ const filmTemplate = (film, userDetails, commentsCount) => {
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
       <p class="film-card__description">${getLimitedText(description)}</p>
-      <span class="film-card__comments">${pluralizePhrase('comment', commentsCount)}</span>
     </a>
     <div class="film-card__controls">
       <button
@@ -48,17 +47,19 @@ const filmTemplate = (film, userDetails, commentsCount) => {
 export default class FilmView extends AbstractView {
   #film = null;
   #userDetails = null;
-  #comments = null;
 
-  constructor(film, userDetails, comments) {
+  constructor(film, userDetails) {
     super();
     this.#film = film;
     this.#userDetails = userDetails;
-    this.#comments = comments;
   }
 
   get template() {
-    return filmTemplate(this.#film, this.#userDetails, this.#comments.length);
+    return filmTemplate(this.#film, this.#userDetails);
+  }
+
+  get filmCardLink() {
+    return this.element.querySelector('.film-card__link');
   }
 
   setOpenPopupHandler = (callback) => {
