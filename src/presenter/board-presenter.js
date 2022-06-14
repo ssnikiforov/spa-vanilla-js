@@ -221,6 +221,7 @@ export default class BoardPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
+
     this.#sortFilms(sortType);
     this.#clearFilmsList();
     this.#renderFilmsList();
