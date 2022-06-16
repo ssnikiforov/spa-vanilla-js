@@ -1,27 +1,7 @@
 import BoardPresenter from './presenter/board-presenter';
 import FilmsModel from './model/films-model';
-import CommentsModel from './model/comments-model';
-import UserDetailsModel from './model/user-details-model';
-import { commentsStorage, filmsWithMetaStorage, userDetailsStorage } from './storage';
-import { createFilmWithMetaObject } from './utils/film';
 
-// prepare data
-// TODO: refactor with Fabric pattern (патчит массив), добавляет нужные поля
 const filmsModel = new FilmsModel();
-const films = [...filmsModel.films];
-films.forEach((film) => {
-  const commentsModel = new CommentsModel();
-  const userDetailsModel = new UserDetailsModel();
 
-  const userDetails = userDetailsModel.userDetails;
-  const comments = [...commentsModel.comments];
-
-  const filmWithMeta = createFilmWithMetaObject(film, userDetails, comments);
-
-  filmsWithMetaStorage.set(filmWithMeta.id, filmWithMeta);
-  userDetailsStorage.set(film.id, userDetails);
-  comments.forEach((comment) => commentsStorage.set(comment.id, comment));
-});
-
-const filmsPresenter = new BoardPresenter(filmsWithMetaStorage, userDetailsStorage, commentsStorage);
+const filmsPresenter = new BoardPresenter(filmsModel);
 filmsPresenter.init();

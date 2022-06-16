@@ -1,8 +1,13 @@
 import { generateComment } from '../mock/comment';
-import { getRandomInteger } from '../utils/common';
 
 export default class CommentsModel {
-  #comments = Array.from({ length: getRandomInteger(0, 10) }, generateComment);
+  #ids = null;
+  #comments = null;
+
+  constructor(ids) {
+    this.#ids = ids;
+    this.#comments = this.#ids.map((id) => generateComment(id));
+  }
 
   get comments() {
     return this.#comments;

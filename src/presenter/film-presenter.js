@@ -3,15 +3,13 @@ import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import FilmCommentsCounterView from '../view/film-comments-counter-view';
 import { remove, render, replace } from '../framework/render';
-import { getCommentsByIds } from '../utils/film';
-import { getMaxNumberFromMapByProperty } from '../utils/common';
-import { commentsStorage } from '../storage';
+import CommentsModel from '../model/comments-model';
+// import { commentsStorage } from '../storage';
 
 export default class FilmPresenter {
   #id = null;
-  #film = null;
+  #filmInfo = null;
   #userDetails = null;
-  #comments = null;
   #commentsIds = null;
   #changeData = null;
 
@@ -21,7 +19,8 @@ export default class FilmPresenter {
   #filmCardCommentsCounterComponent = null;
 
   #popupComponent = null;
-  #popupCommentsComponent = null;
+  #commentsComponent = null;
+  #commentsModel = null;
 
   constructor(container, id, changeData) {
     this.#container = container;
@@ -29,11 +28,11 @@ export default class FilmPresenter {
     this.#changeData = changeData;
   }
 
-  init = ({ film, userDetails, comments: commentsIds }, updatedFilmContainer = null) => {
-    this.#film = film;
+  init = ({ filmInfo, userDetails, comments: commentsIds }, updatedFilmContainer = null) => {
+    this.#filmInfo = filmInfo;
     this.#userDetails = userDetails;
     this.#commentsIds = commentsIds;
-    this.#comments = getCommentsByIds(commentsIds, commentsStorage);
+    // this.#comments = getCommentsByIds(commentsIds, commentsStorage);
     this.#container = updatedFilmContainer ?? this.#container;
 
     this.#renderFilm();
@@ -51,12 +50,14 @@ export default class FilmPresenter {
   destroyPopup = () => {
     document.body.classList.remove('hide-overflow');
     remove(this.#popupComponent);
-    remove(this.#popupCommentsComponent);
+    remove(this.#commentsComponent);
   };
 
   #renderPopup = () => {
-    let popupComponent = new PopupView(this.#film, this.#userDetails);
-    this.#popupCommentsComponent = new CommentsView(this.#comments, getMaxNumberFromMapByProperty(commentsStorage, 'id'), this.#handleChangeCommentsInner);
+    let popupComponent = new PopupView(this.#filmInfo, this.#userDetails);
+
+    this.#commentsModel = new CommentsModel(this.#commentsIds);
+    this.#commentsComponent = new CommentsView(this.#commentsModel.comments, this.#handleChangeCommentsInner);
 
     document.body.classList.add('hide-overflow');
 
@@ -64,10 +65,10 @@ export default class FilmPresenter {
     popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
     popupComponent = this.#setControlButtonsHandlers(popupComponent);
     this.#popupComponent = popupComponent;
-    this.#popupCommentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
+    this.#commentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
 
     render(this.#popupComponent, document.body);
-    render(this.#popupCommentsComponent, this.#popupComponent.commentsEl);
+    render(this.#commentsComponent, this.#popupComponent.commentsEl);
   };
 
   #getNewFilmCardComponent = () => {
@@ -76,10 +77,10 @@ export default class FilmPresenter {
         this.destroyPopup();
       }
 
-      this.#renderPopup(this.#film, this.#userDetails, this.#comments);
+      this.#renderPopup();
     };
 
-    let newFilmComponent = new FilmView(this.#film, this.#userDetails);
+    let newFilmComponent = new FilmView(this.#filmInfo, this.#userDetails);
     newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
     newFilmComponent = this.#setControlButtonsHandlers(newFilmComponent);
     this.#filmCardComponent = newFilmComponent;
@@ -87,9 +88,9 @@ export default class FilmPresenter {
     return newFilmComponent;
   };
 
-  #renderFilmCardCommentsCounter = (comments) => {
+  #renderFilmCardCommentsCounter = () => {
     const existingFilmCardCommentsCounterComponent = this.#filmCardCommentsCounterComponent;
-    this.#filmCardCommentsCounterComponent = new FilmCommentsCounterView(comments);
+    this.#filmCardCommentsCounterComponent = new FilmCommentsCounterView(this.#commentsIds.length);
 
     if (existingFilmCardCommentsCounterComponent
       && this.#filmCardComponent.element.contains(existingFilmCardCommentsCounterComponent.element)) {
@@ -109,7 +110,7 @@ export default class FilmPresenter {
       render(newFilmCardComponent, this.#container);
     }
 
-    this.#renderFilmCardCommentsCounter(this.#comments);
+    this.#renderFilmCardCommentsCounter();
   };
 
   #handleEscKeyDown = (evt) => {
@@ -127,7 +128,7 @@ export default class FilmPresenter {
   #handleToggleWatchlistClick = () => {
     this.#changeData({
       id: this.#id,
-      film: this.#film,
+      filmInfo: this.#filmInfo,
       userDetails: { ...this.#userDetails, watchlist: !this.#userDetails.watchlist },
       comments: this.#commentsIds,
     });
@@ -136,7 +137,7 @@ export default class FilmPresenter {
   #handleToggleAlreadyWatchedClick = () => {
     this.#changeData({
       id: this.#id,
-      film: this.#film,
+      filmInfo: this.#filmInfo,
       userDetails: { ...this.#userDetails, alreadyWatched: !this.#userDetails.alreadyWatched },
       comments: this.#commentsIds,
     });
@@ -145,31 +146,30 @@ export default class FilmPresenter {
   #handleToggleFavoriteClick = () => {
     this.#changeData({
       id: this.#id,
-      film: this.#film,
+      filmInfo: this.#filmInfo,
       userDetails: { ...this.#userDetails, favorite: !this.#userDetails.favorite },
       comments: this.#commentsIds,
     });
   };
 
   #handleChangeCommentsInner = (updatedComments) => {
-    this.#comments = updatedComments;
-    updatedComments.forEach((comment) => commentsStorage.set(comment.id, comment));
+    const comments = updatedComments;
 
-    this.#commentsIds = this.#comments.map(({ id }) => id);
+    this.#commentsIds = comments.map(({ id }) => id);
 
-    const existingCommentComponent = this.#popupCommentsComponent;
-    this.#popupCommentsComponent = new CommentsView(this.#comments, getMaxNumberFromMapByProperty(commentsStorage, 'id'));
-    this.#popupCommentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
-    replace(this.#popupCommentsComponent, existingCommentComponent);
+    const existingCommentComponent = this.#commentsComponent;
+    this.#commentsComponent = new CommentsView(comments);
+    this.#commentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
+    replace(this.#commentsComponent, existingCommentComponent);
 
-    this.#renderFilmCardCommentsCounter(this.#comments);
+    this.#renderFilmCardCommentsCounter(this.#commentsModel.comments);
     this.#handleChangeCommentsForBoard();
   };
 
   #handleChangeCommentsForBoard = () => {
     this.#changeData({
       id: this.#id,
-      film: this.#film,
+      filmInfo: this.#filmInfo,
       userDetails: this.#userDetails,
       comments: this.#commentsIds,
     });

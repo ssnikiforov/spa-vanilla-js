@@ -1,6 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeCommentDate } from '../utils/film';
 import { Emojis } from '../const';
+import { nanoid } from 'nanoid';
 
 const ENTER_KEY_CODE = 13;
 
@@ -46,12 +47,9 @@ const commentsTemplate = (commentsObj) => {
 };
 
 export default class CommentsView extends AbstractStatefulView {
-  #maxCommentId = null;
-
-  constructor(comments, maxCommentId) {
+  constructor(comments) {
     super();
 
-    this.#maxCommentId = maxCommentId;
     this._state = this.#convertCommentsToState(comments);
     this.#setInnerHandlers();
   }
@@ -98,10 +96,11 @@ export default class CommentsView extends AbstractStatefulView {
   });
 
   #convertStateToComments = (state) => {
+    const id = nanoid();
     const comments = {
       ...state,
-      [this.#maxCommentId]: {
-        id: this.#maxCommentId + 1,
+      [id]: {
+        id,
         author: '',
         comment: state.comment,
         date: (new Date()).toISOString(),

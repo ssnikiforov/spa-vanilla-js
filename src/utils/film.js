@@ -47,13 +47,6 @@ const humanizeRuntime = (runtime) => {
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
 
-const createFilmWithMetaObject = ({ id: filmId, ...filmWithoutId }, userDetails, comments) => ({
-  id: filmId,
-  comments: comments.map((comment) => comment.id),
-  film: filmWithoutId,
-  userDetails
-});
-
 const getProfileRatingName = (watchedFilmsCount) => {
   switch (true) {
     case watchedFilmsCount >= ProfileRatings.MOVIE_BUFF:
@@ -76,12 +69,26 @@ const getCommentsByIds = (ids, comments) => {
   return res;
 };
 
-const getTwoExtraFilmsIds = (filmsWithMeta, criteria, subcriteria) => {
+const getTwoExtraFilmsIds = (films, criteria, subcriteria) => {
   const map = new Map();
-  filmsWithMeta.forEach((filmWithMeta) => map.set(filmWithMeta.id, filmWithMeta[criteria][subcriteria]));
+  films.forEach((film) => map.set(film.id, film[criteria][subcriteria]));
   const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(map);
+  return [...films
+    .filter((film) => film.id ===
+      [...twoMaxValuesWithIdsMap.keys()].find((id) => id === film.id))
+    .sort((filmA, filmB) => {
+      const criteriaA = filmA[criteria][subcriteria];
+      const criteriaB = filmB[criteria][subcriteria];
+      if (criteriaA > criteriaB) {
+        return -1;
+      }
+      if (criteriaA < criteriaB) {
+        return 1;
+      }
 
-  return Array.from(twoMaxValuesWithIdsMap.keys()).map((index) => filmsWithMeta[index]);
+      return 0;
+    })
+  ];
 };
 
 const getWeightForNullDate = (dateA, dateB) => {
@@ -126,7 +133,6 @@ export {
   humanizeReleaseDate,
   humanizeCommentDate,
   humanizeRuntime,
-  createFilmWithMetaObject,
   getProfileRatingName,
   getCommentsByIds,
   getTwoExtraFilmsIds,

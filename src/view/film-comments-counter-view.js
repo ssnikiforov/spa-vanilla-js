@@ -4,14 +4,14 @@ import { pluralizePhrase } from '../utils/common';
 const filmCommentsCounterTemplate = (count) => `<span class="film-card__comments">${pluralizePhrase('comment', count)}</span>`;
 
 export default class FilmCommentsCounterView extends AbstractView {
-  #comments = null;
+  #count = null;
 
-  constructor(comments) {
+  constructor(count) {
     super();
-    this.#comments = comments;
+    this.#count = count;
   }
 
   get template() {
-    return filmCommentsCounterTemplate(this.#comments.length);
+    return filmCommentsCounterTemplate(this.#count);
   }
 }
