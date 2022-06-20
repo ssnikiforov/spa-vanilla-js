@@ -7,7 +7,7 @@ import ProfileRatingView from '../view/profile-rating-view';
 import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import FooterCounterView from '../view/footer-counter-view';
-import { remove, render } from '../framework/render';
+import { remove, render, replace } from '../framework/render';
 import { getTwoExtraFilmsIds, sortFilmsDateDown, sortFilmsRatingDown } from '../utils/film';
 import { generateFilter } from '../mock/filter';
 import { ExtraFilmsSectionNames, SortType, UpdateType, UserAction } from '../const';
@@ -155,9 +155,15 @@ export default class BoardPresenter {
   };
 
   #renderProfileRating = () => {
-    const userDetails = this.films.map(({ userDetails: userDetail }) => userDetail);
-    this.#profileRatingComponent = new ProfileRatingView(userDetails);
-    render(this.#profileRatingComponent, document.querySelector('.header'));
+    const userDetailsCount = this.films.filter(({ userDetails: userDetail }) => userDetail.alreadyWatched).length;
+
+    const existingCommentComponent = this.#profileRatingComponent;
+    this.#profileRatingComponent = new ProfileRatingView(userDetailsCount);
+    if (existingCommentComponent) {
+      replace(this.#profileRatingComponent, existingCommentComponent);
+    } else {
+      render(this.#profileRatingComponent, document.querySelector('.header'));
+    }
   };
 
   #renderFilter = () => {
@@ -251,17 +257,20 @@ export default class BoardPresenter {
       case UpdateType.PATCH:
         this.#reRenderFilm(data);
         this.#reRenderMostCommentedExtraFilms();
+        this.#renderProfileRating();
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
         this.#renderFilmsList(this.films);
         this.#renderExtra();
+        this.#renderProfileRating();
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({ resetRenderedTaskCount: true, resetSortType: true });
         this.#renderSort();
         this.#renderFilmsList(this.films);
         this.#renderExtra();
+        this.#renderProfileRating();
         break;
     }
   };
