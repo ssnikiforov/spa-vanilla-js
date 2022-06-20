@@ -28,7 +28,7 @@ const humanizeCommentDate = (commentDate) => {
 
   switch (true) {
     case diffTimeInDays > DayDiffs.THREE:
-      return dayjs(commentDate).format('YYYY/MM/D H:m');
+      return dayjs(commentDate).format('YYYY/MM/D H:mm');
     case diffTimeInDays === DayDiffs.THREE:
       return `${DayDiffs.THREE} days ago`;
     case diffTimeInDays === DayDiffs.TWO:
@@ -46,13 +46,6 @@ const humanizeRuntime = (runtime) => {
 
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
-
-const createFilmWithMetaObject = ({ id: filmId, ...filmWithoutId }, userDetails, comments) => ({
-  id: filmId,
-  comments: comments.map((comment) => comment.id),
-  film: filmWithoutId,
-  userDetails
-});
 
 const getProfileRatingName = (watchedFilmsCount) => {
   switch (true) {
@@ -76,12 +69,27 @@ const getCommentsByIds = (ids, comments) => {
   return res;
 };
 
-const getTwoExtraFilmsIds = (filmsWithMeta, criteria, subcriteria) => {
+const getTwoExtraFilmsIds = (films, criteria, subcriteria) => {
   const map = new Map();
-  filmsWithMeta.forEach((filmWithMeta) => map.set(filmWithMeta.id, filmWithMeta[criteria][subcriteria]));
-  const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(map);
+  films.forEach((film) => map.set(film.id, film[criteria][subcriteria]));
+  const twoMaxValuesWithIdsMap = new Map([...getTwoMaxValuesWithIdsFromMap(map)].filter((pair) => pair[1] !== 0));
 
-  return Array.from(twoMaxValuesWithIdsMap.keys()).map((index) => filmsWithMeta[index]);
+  return [...films
+    .filter((film) => film.id ===
+      [...twoMaxValuesWithIdsMap.keys()].find((id) => id === film.id))
+    .sort((filmA, filmB) => {
+      const criteriaA = filmA[criteria][subcriteria];
+      const criteriaB = filmB[criteria][subcriteria];
+      if (criteriaA > criteriaB) {
+        return -1;
+      }
+      if (criteriaA < criteriaB) {
+        return 1;
+      }
+
+      return 0;
+    })
+  ];
 };
 
 const getWeightForNullDate = (dateA, dateB) => {
@@ -112,13 +120,13 @@ const getWeightForRating = (ratingA, ratingB) => {
   return 0;
 };
 
-const sortFilmsDateDown = ({ film: filmA }, { film: filmB }) => {
+const sortFilmsDateDown = ({ filmInfo: filmA }, { filmInfo: filmB }) => {
   const weight = getWeightForNullDate(filmA.release.date, filmB.release.date);
 
   return weight ?? dayjs(filmB.release.date).diff(dayjs(filmA.release.date));
 };
 
-const sortFilmsRatingDown = ({ film: filmA }, { film: filmB }) => getWeightForRating(filmA.totalRating, filmB.totalRating);
+const sortFilmsRatingDown = ({ filmInfo: filmA }, { filmInfo: filmB }) => getWeightForRating(filmA.totalRating, filmB.totalRating);
 
 export {
   getRandomDate,
@@ -126,7 +134,6 @@ export {
   humanizeReleaseDate,
   humanizeCommentDate,
   humanizeRuntime,
-  createFilmWithMetaObject,
   getProfileRatingName,
   getCommentsByIds,
   getTwoExtraFilmsIds,

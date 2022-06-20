@@ -1,10 +1,10 @@
 import { FilterType } from '../const';
 
 const filter = {
-  [FilterType.ALL]: (filmsWithMeta) => filmsWithMeta,
-  [FilterType.WATCHLIST]: (filmsWithMeta) => filmsWithMeta.filter(({ userDetails }) => userDetails.watchlist),
-  [FilterType.HISTORY]: (filmsWithMeta) => filmsWithMeta.filter(({ userDetails }) => userDetails.alreadyWatched),
-  [FilterType.FAVORITES]: (filmsWithMeta) => filmsWithMeta.filter(({ userDetails }) => userDetails.favorite),
+  [FilterType.ALL]: (films) => films,
+  [FilterType.WATCHLIST]: (films) => films.filter(({ userDetails }) => userDetails.watchlist),
+  [FilterType.HISTORY]: (films) => films.filter(({ userDetails }) => userDetails.alreadyWatched),
+  [FilterType.FAVORITES]: (films) => films.filter(({ userDetails }) => userDetails.favorite),
 };
 
 export { filter };
