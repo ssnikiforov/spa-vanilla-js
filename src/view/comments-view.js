@@ -83,8 +83,7 @@ export default class CommentsView extends AbstractStatefulView {
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
-    this.#form.addEventListener('keypress', this.#commentTextInputEnterKeyInnerHandler); // catch Enter key
-    this.#form.addEventListener('submit', this.#formSubmitHandler); // catch all ways of submitting form
+    this.#form.addEventListener('keydown', this.#formSubmitHandler);
   };
 
   setDeleteCommentClickHandler = (callback) => {
@@ -140,18 +139,11 @@ export default class CommentsView extends AbstractStatefulView {
     });
   };
 
-  /*
-    Hack textarea to don't add new line by Enter key press
-    But it could be easier to change textarea tag to input tag
-   */
-  #commentTextInputEnterKeyInnerHandler = (evt) => {
-    if (evt.which === ENTER_KEY_CODE && !evt.shiftKey) {
-      evt.preventDefault();
-      this.#form.dispatchEvent(new Event('submit', { cancelable: true }));
-    }
-  };
-
   #formSubmitHandler = (evt) => {
+    if (!(evt.keyCode === ENTER_KEY_CODE && (evt.metaKey || evt.ctrlKey))) {
+      return;
+    }
+
     evt.preventDefault();
 
     if (!this._state.comment || !this._state.emotion) {
