@@ -61,7 +61,7 @@ export default class BoardPresenter {
   };
 
   #renderNoFilm = () => {
-    this.#noFilmComponent = new NoFilmView();
+    this.#noFilmComponent = new NoFilmView(this.#filterType);
     render(this.#noFilmComponent, document.querySelector('.main'));
   };
 
@@ -113,6 +113,11 @@ export default class BoardPresenter {
   };
 
   #renderFilmsList = (films) => {
+    if (films.length === 0) {
+      this.#renderNoFilm();
+      return;
+    }
+
     render(this.#filmsContainerComponent, document.querySelector('.main'));
     films.forEach((film) => this.#renderFilm(film, this.#filmsContainerComponent.filmsListEl, this.#changeDataHandler));
 
@@ -224,7 +229,10 @@ export default class BoardPresenter {
     const filmsCount = this.films.length;
 
     remove(this.#sortComponent);
-    remove(this.#noFilmComponent);
+
+    if (this.#noFilmComponent) {
+      remove(this.#noFilmComponent);
+    }
 
     if (resetRenderedTaskCount) {
       this.#renderedFilmsCount = FILMS_COUNT_PER_STEP;
