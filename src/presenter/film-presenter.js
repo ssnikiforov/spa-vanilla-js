@@ -2,15 +2,13 @@ import FilmView from '../view/film-view';
 import PopupView from '../view/popup-view';
 import CommentsView from '../view/comments-view';
 import FilmCommentsCounterView from '../view/film-comments-counter-view';
-import { remove, render, replace } from '../framework/render';
 import CommentsModel from '../model/comments-model';
-// import { commentsStorage } from '../storage';
+import { remove, render, replace } from '../framework/render';
+import { UpdateType, UserAction } from '../const';
 
 export default class FilmPresenter {
+  #film = null;
   #id = null;
-  #filmInfo = null;
-  #userDetails = null;
-  #commentsIds = null;
   #changeData = null;
 
   #container = null;
@@ -28,11 +26,8 @@ export default class FilmPresenter {
     this.#changeData = changeData;
   }
 
-  init = ({ filmInfo, userDetails, comments: commentsIds }, updatedFilmContainer = null) => {
-    this.#filmInfo = filmInfo;
-    this.#userDetails = userDetails;
-    this.#commentsIds = commentsIds;
-    // this.#comments = getCommentsByIds(commentsIds, commentsStorage);
+  init = (film, updatedFilmContainer = null) => {
+    this.#film = film;
     this.#container = updatedFilmContainer ?? this.#container;
 
     this.#renderFilm();
@@ -54,10 +49,12 @@ export default class FilmPresenter {
   };
 
   #renderPopup = () => {
-    let popupComponent = new PopupView(this.#filmInfo, this.#userDetails);
+    let popupComponent = new PopupView(this.#film.filmInfo, this.#film.userDetails);
 
-    this.#commentsModel = new CommentsModel(this.#commentsIds);
-    this.#commentsComponent = new CommentsView(this.#commentsModel.comments, this.#handleChangeCommentsInner);
+    if (!this.#commentsModel) {
+      this.#commentsModel = new CommentsModel(this.#film.comments);
+    }
+    this.#commentsComponent = new CommentsView(this.#commentsModel.comments);
 
     document.body.classList.add('hide-overflow');
 
@@ -65,7 +62,8 @@ export default class FilmPresenter {
     popupComponent.setCloseButtonClickHandler(this.#handleCloseButtonClick);
     popupComponent = this.#setControlButtonsHandlers(popupComponent);
     this.#popupComponent = popupComponent;
-    this.#commentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
+    this.#commentsComponent.setDeleteCommentClickHandler(this.#handleUpdateComments);
+    this.#commentsComponent.setFormSubmitHandler(this.#handleUpdateComments);
 
     render(this.#popupComponent, document.body);
     render(this.#commentsComponent, this.#popupComponent.commentsEl);
@@ -79,8 +77,7 @@ export default class FilmPresenter {
 
       this.#renderPopup();
     };
-
-    let newFilmComponent = new FilmView(this.#filmInfo, this.#userDetails);
+    let newFilmComponent = new FilmView(this.#film.filmInfo, this.#film.userDetails);
     newFilmComponent.setOpenPopupHandler(handleOpenPopupClick);
     newFilmComponent = this.#setControlButtonsHandlers(newFilmComponent);
     this.#filmCardComponent = newFilmComponent;
@@ -90,7 +87,7 @@ export default class FilmPresenter {
 
   #renderFilmCardCommentsCounter = () => {
     const existingFilmCardCommentsCounterComponent = this.#filmCardCommentsCounterComponent;
-    this.#filmCardCommentsCounterComponent = new FilmCommentsCounterView(this.#commentsIds.length);
+    this.#filmCardCommentsCounterComponent = new FilmCommentsCounterView(this.#film.comments.length);
 
     if (existingFilmCardCommentsCounterComponent
       && this.#filmCardComponent.element.contains(existingFilmCardCommentsCounterComponent.element)) {
@@ -126,53 +123,65 @@ export default class FilmPresenter {
   };
 
   #handleToggleWatchlistClick = () => {
-    this.#changeData({
-      id: this.#id,
-      filmInfo: this.#filmInfo,
-      userDetails: { ...this.#userDetails, watchlist: !this.#userDetails.watchlist },
-      comments: this.#commentsIds,
-    });
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      { ...this.#film, userDetails: { ...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist } },
+    );
   };
 
   #handleToggleAlreadyWatchedClick = () => {
-    this.#changeData({
-      id: this.#id,
-      filmInfo: this.#filmInfo,
-      userDetails: { ...this.#userDetails, alreadyWatched: !this.#userDetails.alreadyWatched },
-      comments: this.#commentsIds,
-    });
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      {
+        ...this.#film,
+        userDetails: { ...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }
+      },
+    );
   };
 
   #handleToggleFavoriteClick = () => {
-    this.#changeData({
-      id: this.#id,
-      filmInfo: this.#filmInfo,
-      userDetails: { ...this.#userDetails, favorite: !this.#userDetails.favorite },
-      comments: this.#commentsIds,
-    });
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      { ...this.#film, userDetails: { ...this.#film.userDetails, favorite: !this.#film.userDetails.favorite } },
+    );
   };
 
-  #handleChangeCommentsInner = (updatedComments) => {
-    const comments = updatedComments;
-
-    this.#commentsIds = comments.map(({ id }) => id);
+  #handleUpdateComments = (userAction, update) => {
+    switch (userAction) {
+      case UserAction.ADD_COMMENT:
+        this.#film.comments.push(update.id);
+        this.#commentsModel.addComment(userAction, update);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#film.comments = this.#film.comments.filter((comment) => comment !== update.id);
+        this.#commentsModel.deleteComment(userAction, update);
+        break;
+      default:
+        break;
+    }
 
     const existingCommentComponent = this.#commentsComponent;
-    this.#commentsComponent = new CommentsView(comments);
-    this.#commentsComponent.setFormSubmitHandler(this.#handleChangeCommentsInner);
+    this.#commentsComponent = new CommentsView(this.#commentsModel.comments);
+    this.#commentsComponent.setDeleteCommentClickHandler(this.#handleUpdateComments);
+    this.#commentsComponent.setFormSubmitHandler(this.#handleUpdateComments);
     replace(this.#commentsComponent, existingCommentComponent);
 
-    this.#renderFilmCardCommentsCounter(this.#commentsModel.comments);
-    this.#handleChangeCommentsForBoard();
-  };
+    this.#renderFilmCardCommentsCounter();
 
-  #handleChangeCommentsForBoard = () => {
-    this.#changeData({
-      id: this.#id,
-      filmInfo: this.#filmInfo,
-      userDetails: this.#userDetails,
-      comments: this.#commentsIds,
-    });
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.PATCH,
+      this.#film,
+    );
+
+    this.#changeData(
+      userAction,
+      UpdateType.PATCH,
+      this.#film,
+    );
   };
 
   #setControlButtonsHandlers = (component) => {

@@ -3,19 +3,26 @@ import { SortType } from '../const';
 
 const getActiveClassNameModifier = () => 'sort__button--active';
 
-const sortTemplate = () =>
+const sortTemplate = (currentSortType) =>
   `<ul class="sort">
-    <li><a href="#" class="sort__button ${getActiveClassNameModifier()}"
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? getActiveClassNameModifier() : ''}"
         data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
-    <li><a href="#" class="sort__button"
+    <li><a href="#" class="sort__button ${currentSortType === SortType.DATE_DOWN ? getActiveClassNameModifier() : ''}"
         data-sort-type="${SortType.DATE_DOWN}">Sort by date</li>
-    <li><a href="#" class="sort__button"
+    <li><a href="#" class="sort__button ${currentSortType === SortType.RATING_DOWN ? getActiveClassNameModifier() : ''}"
         data-sort-type="${SortType.RATING_DOWN}">Sort by rating</a></li>
   </ul>`;
 
 export default class SortView extends AbstractView {
+  #currentSortType = null;
+
+  constructor(currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
+
   get template() {
-    return sortTemplate();
+    return sortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {
@@ -30,9 +37,6 @@ export default class SortView extends AbstractView {
     }
     evt.preventDefault();
 
-    const buttons = this.element.querySelectorAll('.sort__button');
-    buttons.forEach((button) => button.classList.remove(getActiveClassNameModifier()));
-    target.classList.add(getActiveClassNameModifier());
     this._callback.sortTypeChange(target.dataset.sortType);
   };
 }

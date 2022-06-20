@@ -1,7 +1,7 @@
 import { getRandomDate, getRandomText } from '../utils/film.js';
-import { names, FilmConsts } from '../const.js';
+import { FilmConsts, names } from '../const.js';
 import { getRandomInteger, getRandomNumber, getRandomValuesFromArray } from '../utils/common';
-import {nanoid} from 'nanoid';
+import { nanoid } from 'nanoid';
 
 const MAX_YEARS_GAP = -100;
 
@@ -28,7 +28,7 @@ export const generateFilm = () => {
 
   return {
     id: nanoid(),
-    comments: Array.from({ length: getRandomInteger(10) }, nanoid),
+    comments: Array.from({ length: getRandomInteger(5) }, nanoid),
     filmInfo: {
       title: generateTitle(),
       alternativeTitle: generateTitle(),

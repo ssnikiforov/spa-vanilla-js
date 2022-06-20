@@ -1,6 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeCommentDate } from '../utils/film';
-import { Emojis } from '../const';
+import { Emojis, UserAction } from '../const';
 import { nanoid } from 'nanoid';
 
 const ENTER_KEY_CODE = 13;
@@ -9,7 +9,7 @@ const selectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoj
 
 const commentsTemplate = (commentsObj) => {
   const comments = Object.values(commentsObj).filter((value) => typeof value === 'object');
-  const existingCommentCardTemplate = ({ author, comment, date, emotion }) => `<li class="film-details__comment">
+  const existingCommentCardTemplate = ({ id, author, comment, date, emotion }) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
@@ -18,7 +18,7 @@ const commentsTemplate = (commentsObj) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-        <button class="film-details__comment-delete">Delete</button>
+        <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
       </p>
     </div>
   </li>`;
@@ -49,7 +49,6 @@ const commentsTemplate = (commentsObj) => {
 export default class CommentsView extends AbstractStatefulView {
   constructor(comments) {
     super();
-
     this._state = this.#convertCommentsToState(comments);
     this.#setInnerHandlers();
   }
@@ -78,10 +77,19 @@ export default class CommentsView extends AbstractStatefulView {
     return this.#newCommentWrapper.querySelector('.film-details__emoji-list');
   }
 
+  get #deleteCommentButtons() {
+    return this.#form.querySelectorAll('.film-details__comment-delete');
+  }
+
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.#form.addEventListener('keypress', this.#commentTextInputEnterKeyInnerHandler); // catch Enter key
     this.#form.addEventListener('submit', this.#formSubmitHandler); // catch all ways of submitting form
+  };
+
+  setDeleteCommentClickHandler = (callback) => {
+    this._callback.deleteComment = callback;
+    this.#deleteCommentButtons.forEach((button) => button.addEventListener('click', this.#deleteCommentClickHandler));
   };
 
   _restoreHandlers = () => {
@@ -95,23 +103,18 @@ export default class CommentsView extends AbstractStatefulView {
     emotion: '',
   });
 
-  #convertStateToComments = (state) => {
-    const id = nanoid();
-    const comments = {
-      ...state,
-      [id]: {
-        id,
-        author: '',
-        comment: state.comment,
-        date: (new Date()).toISOString(),
-        emotion: state.emotion,
-      }
+  #convertStateToNewComment = (state) => {
+    const newComment = {
+      id: nanoid(),
+      author: '',
+      comment: state.comment,
+      date: (new Date()).toISOString(),
+      emotion: state.emotion,
     };
 
-    delete comments.comment;
-    delete comments.emotion;
+    this._setState({ ...state, newComment, comment: '', emotion: '' });
 
-    return Object.values(comments);
+    return newComment;
   };
 
   #emojiPickerClickInnerHandler = (evt) => {
@@ -156,7 +159,22 @@ export default class CommentsView extends AbstractStatefulView {
       return;
     }
 
-    this._callback.formSubmit(this.#convertStateToComments(this._state));
+    this._callback.formSubmit(UserAction.ADD_COMMENT, this.#convertStateToNewComment(this._state));
+  };
+
+  #deleteCommentClickHandler = (evt) => {
+    evt.preventDefault();
+
+    const deletedCommentId = evt.target.dataset.commentId;
+    const deletedComment = Object.values(this._state).find(({ id }) => id === deletedCommentId);
+
+    this._setState({
+      ...Object.values(this._state).filter((value) => typeof value === 'object')
+        .filter((comment) => comment.id !== deletedCommentId),
+      comment: this._state.comment,
+      emotion: this._state.emotion,
+    });
+    this._callback.deleteComment(UserAction.DELETE_COMMENT, deletedComment);
   };
 
   #setInnerHandlers = () => {
