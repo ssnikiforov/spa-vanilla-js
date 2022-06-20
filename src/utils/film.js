@@ -28,7 +28,7 @@ const humanizeCommentDate = (commentDate) => {
 
   switch (true) {
     case diffTimeInDays > DayDiffs.THREE:
-      return dayjs(commentDate).format('YYYY/MM/D H:m');
+      return dayjs(commentDate).format('YYYY/MM/D H:mm');
     case diffTimeInDays === DayDiffs.THREE:
       return `${DayDiffs.THREE} days ago`;
     case diffTimeInDays === DayDiffs.TWO:
