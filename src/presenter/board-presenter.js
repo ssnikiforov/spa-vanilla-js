@@ -108,6 +108,10 @@ export default class BoardPresenter {
   #renderFilmsList = (films) => {
     render(this.#filmsContainerComponent, document.querySelector('.main'));
     films.forEach((film) => this.#renderFilm(film, this.#filmsContainerComponent.filmsListEl, this.#changeDataHandler));
+
+    if (this.films.length > this.#renderedFilmsCount) {
+      this.#renderShowMoreButton();
+    }
   };
 
   #renderExtra = () => {
@@ -196,9 +200,6 @@ export default class BoardPresenter {
     this.#renderSort();
 
     this.#renderFilmsList(films.slice(0, Math.min(filmsCount, this.#renderedFilmsCount)));
-    if (filmsCount > this.#renderedFilmsCount) {
-      this.#renderShowMoreButton();
-    }
 
     this.#clearExtra();
     this.#renderExtra();
@@ -221,9 +222,6 @@ export default class BoardPresenter {
 
   #clearBoard = ({ resetRenderedTaskCount = false, resetSortType = false } = {}) => {
     const filmsCount = this.films.length;
-
-    this.#filmPresenters.forEach((presenter) => presenter.destroy());
-    this.#filmPresenters.clear();
 
     remove(this.#sortComponent);
     remove(this.#noFilmComponent);
@@ -261,14 +259,14 @@ export default class BoardPresenter {
         break;
       case UpdateType.MINOR:
         this.#clearBoard();
-        this.#renderFilmsList(this.films);
+        this.#renderFilmsList(this.films.slice(0, Math.min(this.films.length, this.#renderedFilmsCount)));
         this.#renderExtra();
         this.#renderProfileRating();
         break;
       case UpdateType.MAJOR:
         this.#clearBoard({ resetRenderedTaskCount: true, resetSortType: true });
         this.#renderSort();
-        this.#renderFilmsList(this.films);
+        this.#renderFilmsList(this.films.slice(0, Math.min(this.films.length, this.#renderedFilmsCount)));
         this.#renderExtra();
         this.#renderProfileRating();
         break;
@@ -282,10 +280,10 @@ export default class BoardPresenter {
 
     this.#currentSortType = sortType;
     remove(this.#sortComponent);
-    this.#renderSort();
 
-    this.#clearFilmsList({ resetRenderedTaskCount: true });
-    this.#renderFilmsList(this.films);
+    this.#clearBoard({ resetRenderedTaskCount: true });
+    this.#renderSort();
+    this.#renderFilmsList(this.films.slice(0, Math.min(this.films.length, this.#renderedFilmsCount)));
     this.#clearExtra();
     this.#renderExtra();
   };
