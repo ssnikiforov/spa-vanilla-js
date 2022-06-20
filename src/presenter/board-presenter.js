@@ -1,25 +1,26 @@
+import FilmPresenter from './film-presenter';
 import FilmsContainerView from '../view/films-container-view';
 import ShowMoreView from '../view/show-more-view';
 import ExtraFilmsContainerView from '../view/extra-films-container-view';
 import NoFilmView from '../view/no-film-view';
-import FilmPresenter from './film-presenter';
 import ProfileRatingView from '../view/profile-rating-view';
-import FilterView from '../view/filter-view';
 import SortView from '../view/sort-view';
 import FooterCounterView from '../view/footer-counter-view';
 import { remove, render, replace } from '../framework/render';
 import { getTwoExtraFilmsIds, sortFilmsDateDown, sortFilmsRatingDown } from '../utils/film';
-import { generateFilter } from '../mock/filter';
-import { ExtraFilmsSectionNames, SortType, UpdateType, UserAction } from '../const';
+import { ExtraFilmsSectionNames, FilterType, SortType, UpdateType, UserAction } from '../const';
+import { filter } from '../utils/filter';
 
 const FILMS_COUNT_PER_STEP = 5;
 
 export default class BoardPresenter {
   #filmsModel = null;
 
+  #filterModel = null;
+  #filterType = FilterType.ALL;
+
   #profileRatingComponent = null;
   #sortComponent = null;
-  #filterComponent = null;
   #filmsContainerComponent = new FilmsContainerView();
   #showMoreButtonComponent = null;
   #extraFilmsContainerComponents = new Map();
@@ -31,21 +32,27 @@ export default class BoardPresenter {
   #filmPresenters = {};
   #changeDataHandler = null;
 
-  constructor(filmsModel) {
+  constructor(filmsModel, filterModel) {
     this.#filmsModel = filmsModel;
+    this.#filterModel = filterModel;
 
     this.#filmsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get films() {
+    this.#filterType = this.#filterModel.filter;
+    const films = this.#filmsModel.films;
+    const filteredFilms = filter[this.#filterType](films);
+
     switch (this.#currentSortType) {
       case SortType.DATE_DOWN:
-        return [...this.#filmsModel.films].sort(sortFilmsDateDown);
+        return filteredFilms.sort(sortFilmsDateDown);
       case SortType.RATING_DOWN:
-        return [...this.#filmsModel.films].sort(sortFilmsRatingDown);
+        return filteredFilms.sort(sortFilmsRatingDown);
     }
 
-    return this.#filmsModel.films;
+    return filteredFilms;
   }
 
   init = () => {
@@ -170,12 +177,6 @@ export default class BoardPresenter {
     }
   };
 
-  #renderFilter = () => {
-    const filters = generateFilter(Array.from(this.films.values()));
-    this.#filterComponent = new FilterView(filters);
-    render(this.#filterComponent, document.querySelector('.main'));
-  };
-
   #renderSort = () => {
     this.#sortComponent = new SortView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
@@ -196,7 +197,6 @@ export default class BoardPresenter {
 
     this.#renderProfileRating();
     this.#renderFooterFilmsCounter();
-    this.#renderFilter();
     this.#renderSort();
 
     this.#renderFilmsList(films.slice(0, Math.min(filmsCount, this.#renderedFilmsCount)));
@@ -255,12 +255,6 @@ export default class BoardPresenter {
       case UpdateType.PATCH:
         this.#reRenderFilm(data);
         this.#reRenderMostCommentedExtraFilms();
-        this.#renderProfileRating();
-        break;
-      case UpdateType.MINOR:
-        this.#clearBoard();
-        this.#renderFilmsList(this.films.slice(0, Math.min(this.films.length, this.#renderedFilmsCount)));
-        this.#renderExtra();
         this.#renderProfileRating();
         break;
       case UpdateType.MAJOR:
