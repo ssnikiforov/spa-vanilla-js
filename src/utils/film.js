@@ -72,7 +72,8 @@ const getCommentsByIds = (ids, comments) => {
 const getTwoExtraFilmsIds = (films, criteria, subcriteria) => {
   const map = new Map();
   films.forEach((film) => map.set(film.id, film[criteria][subcriteria]));
-  const twoMaxValuesWithIdsMap = getTwoMaxValuesWithIdsFromMap(map);
+  const twoMaxValuesWithIdsMap = new Map([...getTwoMaxValuesWithIdsFromMap(map)].filter(([id, value]) => value !== 0));
+
   return [...films
     .filter((film) => film.id ===
       [...twoMaxValuesWithIdsMap.keys()].find((id) => id === film.id))
