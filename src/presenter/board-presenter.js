@@ -3,6 +3,7 @@ import FilmsContainerView from '../view/films-container-view';
 import ShowMoreView from '../view/show-more-view';
 import ExtraFilmsContainerView from '../view/extra-films-container-view';
 import NoFilmView from '../view/no-film-view';
+import LoadingView from '../view/loading-view';
 import ProfileRatingView from '../view/profile-rating-view';
 import SortView from '../view/sort-view';
 import FooterCounterView from '../view/footer-counter-view';
@@ -21,6 +22,7 @@ export default class BoardPresenter {
 
   #profileRatingComponent = null;
   #sortComponent = null;
+  #loadingComponent = new LoadingView();
   #filmsContainerComponent = new FilmsContainerView();
   #showMoreButtonComponent = null;
   #extraFilmsContainerComponents = new Map();
@@ -31,6 +33,8 @@ export default class BoardPresenter {
 
   #filmPresenters = {};
   #changeDataHandler = null;
+
+  #isLoading = true;
 
   constructor(filmsModel, filterModel) {
     this.#filmsModel = filmsModel;
@@ -58,6 +62,10 @@ export default class BoardPresenter {
   init = () => {
     this.#changeDataHandler = this.#handleViewAction;
     this.#renderBoard();
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, document.querySelector('.main'));
   };
 
   #renderNoFilm = () => {
@@ -171,7 +179,10 @@ export default class BoardPresenter {
   };
 
   #renderProfileRating = () => {
-    const userDetailsCount = this.films.filter(({ userDetails: userDetail }) => userDetail.alreadyWatched).length;
+    // берём фильмы прямо из модели,
+    // чтобы фильтрация фильмов не влияла на рейтинг пользователя
+    const userDetailsCount = this.#filmsModel.films
+      .filter(({ userDetails: userDetail }) => userDetail.alreadyWatched).length;
 
     const existingCommentComponent = this.#profileRatingComponent;
     this.#profileRatingComponent = new ProfileRatingView(userDetailsCount);
@@ -193,6 +204,11 @@ export default class BoardPresenter {
   };
 
   #renderBoard = () => {
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const films = this.films;
     const filmsCount = films.length;
     if (!filmsCount) {
@@ -228,6 +244,7 @@ export default class BoardPresenter {
   #clearBoard = ({ resetRenderedTaskCount = false, resetSortType = false } = {}) => {
     const filmsCount = this.films.length;
 
+    remove(this.#loadingComponent);
     remove(this.#sortComponent);
 
     if (this.#noFilmComponent) {
@@ -271,6 +288,11 @@ export default class BoardPresenter {
         this.#renderFilmsList(this.films.slice(0, Math.min(this.films.length, this.#renderedFilmsCount)));
         this.#renderExtra();
         this.#renderProfileRating();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
         break;
     }
   };

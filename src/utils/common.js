@@ -24,13 +24,6 @@ const getRandomValuesFromArray = (arr, maxQuantity = 1) => {
   return maxQuantity > 1 ? values : values.join();
 };
 
-const getRandomNumber = (a = 0, b = 1) => {
-  const lower = Math.min(a, b);
-  const upper = Math.max(a, b);
-
-  return (Math.random() * (upper - lower) + lower).toFixed(1);
-};
-
 const getLimitedText = (string, maxLength = 140) => {
   if (string.length < maxLength) {
     return string;
@@ -67,7 +60,6 @@ const getTwoMaxValuesWithIdsFromMap = (map) => {
 };
 
 export {
-  getRandomNumber,
   getRandomInteger,
   getRandomValuesFromArray,
   getLimitedText,
