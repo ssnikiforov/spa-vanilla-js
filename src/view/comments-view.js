@@ -2,7 +2,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeCommentDate } from '../utils/film';
 import { Emojis, UserAction } from '../const';
 import he from 'he';
-import { nanoid } from 'nanoid';
 
 const ENTER_KEY_CODE = 13;
 
@@ -48,9 +47,19 @@ const commentsTemplate = (commentsObj) => {
 };
 
 export default class CommentsView extends AbstractStatefulView {
-  constructor(comments) {
+  constructor(comments, { comment = null, emotion = null } = {}) {
     super();
     this._state = this.#convertCommentsToState(comments);
+
+    // put comment's text and/or emotion from previous state of replaced component
+    if (comment || emotion) {
+      this._setState({ comment, emotion });
+      this.#newCommentInput.value = comment;
+      this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
+      const emojiFromEmojiList = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
+      emojiFromEmojiList.checked = true;
+    }
+
     this.#setInnerHandlers();
   }
 
@@ -103,19 +112,10 @@ export default class CommentsView extends AbstractStatefulView {
     emotion: '',
   });
 
-  #convertStateToNewComment = (state) => {
-    const newComment = {
-      id: nanoid(),
-      author: '',
-      comment: state.comment,
-      date: (new Date()).toISOString(),
-      emotion: state.emotion,
-    };
-
-    this._setState({ ...state, newComment, comment: '', emotion: '' });
-
-    return newComment;
-  };
+  #convertStateToNewComment = (state) => ({
+    comment: state.comment,
+    emotion: state.emotion,
+  });
 
   #emojiPickerClickInnerHandler = (evt) => {
     if (evt.target.tagName !== 'IMG') {
@@ -158,16 +158,13 @@ export default class CommentsView extends AbstractStatefulView {
   #deleteCommentClickHandler = (evt) => {
     evt.preventDefault();
 
-    const deletedCommentId = evt.target.dataset.commentId;
-    const deletedComment = Object.values(this._state).find(({ id }) => id === deletedCommentId);
-
-    this._setState({
-      ...Object.values(this._state).filter((value) => typeof value === 'object')
-        .filter((comment) => comment.id !== deletedCommentId),
-      comment: this._state.comment,
-      emotion: this._state.emotion,
+    const commentId = evt.target.dataset.commentId.toString();
+    this._callback.deleteComment(UserAction.DELETE_COMMENT, {
+      commentId, previousState: { // preventing loss of user data for better UX
+        comment: this._state.comment,
+        emotion: this._state.emotion,
+      }
     });
-    this._callback.deleteComment(UserAction.DELETE_COMMENT, deletedComment);
   };
 
   #setInnerHandlers = () => {

@@ -1,25 +1,8 @@
 import dayjs from 'dayjs';
-import { DayDiffs, DayJsGaps, ProfileRatings } from '../const';
-import { getRandomInteger, getRandomValuesFromArray, getTwoMaxValuesWithIdsFromMap } from './common';
+import { DayDiffs, ProfileRatings } from '../const';
+import { getTwoMaxValuesWithIdsFromMap } from './common';
 
-const getRandomText = () => {
-  const lorem = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.';
-
-  const loremArr = lorem.split('.')
-    .map((s) => s.trim())
-    .filter((v) => v.length > 0);
-  const res = getRandomValuesFromArray(loremArr, 3);
-
-  return `${Array.isArray(res) ? res.join('. ').trim() : res}.`;
-};
-
-const getRandomDate = (maxYearsGap = DayJsGaps.YEARS,
-  maxMothsGap = DayJsGaps.MONTHS,
-  maxDaysGap = DayJsGaps.DAYS) => dayjs()
-  .add(getRandomInteger(maxYearsGap, 0), 'year')
-  .subtract(getRandomInteger(maxMothsGap, 0), 'month')
-  .subtract(getRandomInteger(maxDaysGap, 0), 'day')
-  .toISOString();
+const MINUTES_IN_HOUR = 60;
 
 const humanizeReleaseDate = (date, isFullFormat = false) => isFullFormat ? dayjs(date).format('D MMMM YYYY') : dayjs(date).format('YYYY');
 
@@ -41,8 +24,8 @@ const humanizeCommentDate = (commentDate) => {
 };
 
 const humanizeRuntime = (runtime) => {
-  const hours = Math.floor(runtime / 60);
-  const minutes = runtime - hours * 60;
+  const hours = Math.floor(runtime / MINUTES_IN_HOUR);
+  const minutes = runtime - hours * MINUTES_IN_HOUR;
 
   return hours ? `${hours}h ${minutes}m` : `${minutes}m`;
 };
@@ -118,8 +101,6 @@ const sortFilmsDateDown = ({ filmInfo: filmA }, { filmInfo: filmB }) => {
 const sortFilmsRatingDown = ({ filmInfo: filmA }, { filmInfo: filmB }) => getWeightForRating(filmA.totalRating, filmB.totalRating);
 
 export {
-  getRandomDate,
-  getRandomText,
   humanizeReleaseDate,
   humanizeCommentDate,
   humanizeRuntime,

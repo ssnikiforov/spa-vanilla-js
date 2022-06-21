@@ -40,14 +40,14 @@ export default class BoardPresenter {
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
 
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filmsModel.addObserver(this.#handleFilmsModelEvent);
+    this.#filterModel.addObserver(this.#handleFilmsModelEvent);
   }
 
   get films() {
     this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filter[this.#filterType](films);
+    const filteredFilms = [...filter[this.#filterType](films)];
 
     switch (this.#currentSortType) {
       case SortType.DATE_DOWN:
@@ -270,16 +270,19 @@ export default class BoardPresenter {
       case UserAction.UPDATE_FILM:
         this.#filmsModel.updateFilm(updateType, update);
         break;
+      case UserAction.UPDATE_FILM_COMMENTS:
+        this.#reRenderFilm(update);
+        this.#reRenderMostCommentedExtraFilms();
+        break;
       default:
         break;
     }
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handleFilmsModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#reRenderFilm(data);
-        this.#reRenderMostCommentedExtraFilms();
         this.#renderProfileRating();
         break;
       case UpdateType.MAJOR:
