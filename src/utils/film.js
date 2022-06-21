@@ -58,17 +58,6 @@ const getProfileRatingName = (watchedFilmsCount) => {
   }
 };
 
-const getCommentsByIds = (ids, comments) => {
-  let res = [];
-  if (comments instanceof Array) {
-    res = ids.map((id) => comments[id]);
-  } else if (comments instanceof Map) {
-    res = ids.map((id) => comments.get(id));
-  }
-
-  return res;
-};
-
 const getTwoExtraFilmsIds = (films, criteria, subcriteria) => {
   const map = new Map();
   films.forEach((film) => map.set(film.id, film[criteria][subcriteria]));
@@ -135,7 +124,6 @@ export {
   humanizeCommentDate,
   humanizeRuntime,
   getProfileRatingName,
-  getCommentsByIds,
   getTwoExtraFilmsIds,
   sortFilmsDateDown,
   sortFilmsRatingDown,
