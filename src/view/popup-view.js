@@ -1,8 +1,8 @@
-import AbstractView from '../framework/view/abstract-view';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 import { createElement } from '../framework/render';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
-const getControlsHtml = ({ watchlist, alreadyWatched, favorite }) => {
+const getControlsHtml = ({ watchlist, alreadyWatched, favorite }, isSaving) => {
   const getActiveClassNameModifier = (item) => item
     ? 'film-details__control-button--active'
     : '';
@@ -11,19 +11,25 @@ const getControlsHtml = ({ watchlist, alreadyWatched, favorite }) => {
     <button type="button"
       class="film-details__control-button film-details__control-button--watchlist ${getActiveClassNameModifier(watchlist)}"
       id="watchlist"
-      name="watchlist">Add to watchlist</button>
+      name="watchlist"
+      ${isSaving ? 'disabled' : ''}
+    >Add to watchlist</button>
     <button type="button"
         class="film-details__control-button film-details__control-button--watched ${getActiveClassNameModifier(alreadyWatched)}"
         id="watched"
-        name="watched">Already watched</button>
+        name="watched"
+        ${isSaving ? 'disabled' : ''}
+      >Already watched</button>
     <button type="button"
         class="film-details__control-button film-details__control-button--favorite ${getActiveClassNameModifier(favorite)}"
         id="favorite"
-        name="favorite">Add to favorites</button>
+        name="favorite"
+        ${isSaving ? 'disabled' : ''}
+      >Add to favorites</button>
   </section>`;
 };
 
-const popupTemplate = (film, userDetails) => {
+const popupTemplate = (film, userDetails, { isSaving }) => {
   const getFilmDetailsHtml = ({
     title,
     alternativeTitle,
@@ -99,13 +105,13 @@ const popupTemplate = (film, userDetails) => {
         <button class="film-details__close-btn" type="button">close</button>
       </div>
       ${getFilmDetailsHtml(film)}
-      ${getControlsHtml(userDetails)}
+      ${getControlsHtml(userDetails, isSaving)}
     </div>
     <div class="film-details__bottom-container"></div>
    </section>`;
 };
 
-export default class PopupView extends AbstractView {
+export default class PopupView extends AbstractStatefulView {
   #film = null;
   #userDetails = null;
 
@@ -113,10 +119,13 @@ export default class PopupView extends AbstractView {
     super();
     this.#film = film;
     this.#userDetails = userDetails;
+    this._state = {
+      isSaving: false,
+    };
   }
 
   get template() {
-    return popupTemplate(this.#film, this.#userDetails);
+    return popupTemplate(this.#film, this.#userDetails, this._state);
   }
 
   get commentsEl() {
@@ -130,6 +139,14 @@ export default class PopupView extends AbstractView {
   get controlsEl() {
     return this.element.querySelector('.film-details__controls');
   }
+
+  updateElement = (update) => {
+    if (!update) {
+      return;
+    }
+
+    this._setState(update);
+  };
 
   updateControlButtons = (newUserDetails) => {
     this.#userDetails = newUserDetails;
@@ -162,6 +179,10 @@ export default class PopupView extends AbstractView {
     this._callback.favoriteToggle = callback;
     const button = this.element.querySelector('.film-details__control-button--favorite');
     button.addEventListener('click', this.#favoriteToggleHandler);
+  };
+
+  _restoreHandlers = () => {
+
   };
 
   #closeButtonClickHandler = (evt) => {

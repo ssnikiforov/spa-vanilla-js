@@ -4,8 +4,9 @@ import CommentsView from '../view/comments-view';
 import FilmCommentsCounterView from '../view/film-comments-counter-view';
 import CommentsModel from '../model/comments-model';
 import CommentsApiService from '../services/comments-api-service';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { remove, render, replace } from '../framework/render';
-import { ApiServicesConfig, UpdateType, UserAction } from '../const';
+import { ApiServicesConfig, UiBlockerTimeLimit, UpdateType, UserAction } from '../const';
 
 export default class FilmPresenter {
   #film = null;
@@ -22,6 +23,7 @@ export default class FilmPresenter {
   #commentsModel = null;
 
   #commentsApiService = null;
+  #uiBlocker = new UiBlocker(UiBlockerTimeLimit.LOWER_LIMIT, UiBlockerTimeLimit.UPPER_LIMIT);
 
   constructor(container, id, changeData) {
     this.#container = container;
@@ -50,6 +52,33 @@ export default class FilmPresenter {
     document.body.classList.remove('hide-overflow');
     remove(this.#popupComponent);
     remove(this.#commentsComponent);
+  };
+
+  setSavingFilm = () => {
+    this.#filmCardComponent.updateElement({
+      isSaving: true,
+    });
+    this.#popupComponent.updateElement({
+      isSaving: true,
+    });
+  };
+
+  setSavingFilmAborting = () => {
+    const resetButtonsState = () => {
+      this.#filmCardComponent.updateElement({
+        isSaving: false,
+      });
+    };
+    const resetPopupButtonsState = () => {
+      this.#popupComponent.updateElement({
+        isSaving: false,
+      });
+    };
+
+    this.#filmCardComponent.shake(resetButtonsState);
+    if (this.#popupComponent) {
+      this.#popupComponent.shake(resetPopupButtonsState);
+    }
   };
 
   #renderPopup = () => {
@@ -156,17 +185,53 @@ export default class FilmPresenter {
     );
   };
 
-  #handleUpdateCommentsViewAction = (userAction, update) => {
+  #handleUpdateCommentsViewAction = async (userAction, update) => {
+    this.#uiBlocker.block();
+
     switch (userAction) {
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(userAction, update);
+        this.#commentsComponent.updateElement({
+          isDisabled: true,
+          isSaving: true,
+        });
+
+        try {
+          await this.#commentsModel.addComment(userAction, update);
+        } catch (err) {
+          const resetFormState = () => {
+            this.#commentsComponent.updateElement({
+              isDisabled: false,
+              isSaving: false,
+            });
+          };
+          this.#commentsComponent.shake(resetFormState);
+          this.#commentsComponent.setCommentAndEmotion(update['comment'], update['emotion']);
+        }
         break;
+
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(userAction, update);
+        this.#commentsComponent.updateElement({
+          isDisabled: true,
+          isDeleting: true,
+        });
+
+        try {
+          await this.#commentsModel.deleteComment(userAction, update);
+        } catch (err) {
+          const resetDeleteButtonState = () => {
+            this.#commentsComponent.updateElement({
+              isDisabled: false,
+              isDeleting: false,
+            });
+          };
+          this.#commentsComponent.shake(resetDeleteButtonState);
+        }
         break;
       default:
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleCommentsModelEvent = (updateType, update) => {
