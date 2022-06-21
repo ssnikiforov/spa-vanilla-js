@@ -171,7 +171,10 @@ export default class BoardPresenter {
   };
 
   #renderProfileRating = () => {
-    const userDetailsCount = this.films.filter(({ userDetails: userDetail }) => userDetail.alreadyWatched).length;
+    // берём фильмы прямо из модели,
+    // чтобы фильтрация фильмов не влияла на рейтинг пользователя
+    const userDetailsCount = this.#filmsModel.films
+      .filter(({ userDetails: userDetail }) => userDetail.alreadyWatched).length;
 
     const existingCommentComponent = this.#profileRatingComponent;
     this.#profileRatingComponent = new ProfileRatingView(userDetailsCount);
