@@ -273,10 +273,10 @@ export default class BoardPresenter {
 
   #handleViewAction = async (actionType, updateType = null, update = null) => {
     this.#uiBlocker.block();
+    const filmPresenters = update ? this.#filmPresenters[parseInt(update.id, 10)] : null;
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        const filmPresenters = this.#filmPresenters[parseInt(update.id, 10)];
         filmPresenters.forEach((filmPresenter) => filmPresenter.setSavingFilm());
 
         try {
