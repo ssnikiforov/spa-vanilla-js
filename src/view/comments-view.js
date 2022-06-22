@@ -1,9 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeCommentDate } from '../utils/film';
-import { Emojis, UserAction } from '../const';
+import { Emojis, ENTER_KEY_CODE, UserAction } from '../const';
 import he from 'he';
-
-const ENTER_KEY_CODE = 13;
 
 const selectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
 

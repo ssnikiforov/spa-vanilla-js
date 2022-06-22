@@ -93,6 +93,7 @@ const UserAction = {
   UPDATE_FILM_COMMENTS: 'UPDATE_FILM_COMMENTS',
   ADD_COMMENT: 'ADD_COMMENT',
   DELETE_COMMENT: 'DELETE_COMMENT',
+  OPEN_POPUP: 'OPEN_POPUP',
 };
 
 const UpdateType = {
@@ -111,6 +112,27 @@ const UiBlockerTimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
+/** @enum {string} Перечисление возможных позиций для отрисовки */
+const RenderPosition = {
+  BEFOREBEGIN: 'beforebegin',
+  AFTERBEGIN: 'afterbegin',
+  BEFOREEND: 'beforeend',
+  AFTEREND: 'afterend',
+};
+
+const MINUTES_IN_HOUR = 60;
+
+const DESCRIPTION_MAX_LENGTH = 140;
+
+const ApiMethod = {
+  POST: 'POST',
+  DELETE: 'DELETE',
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
+const ENTER_KEY_CODE = 13;
+
 export {
   names,
   DayJsGaps,
@@ -125,4 +147,9 @@ export {
   UpdateType,
   ApiServicesConfig,
   UiBlockerTimeLimit,
+  RenderPosition,
+  MINUTES_IN_HOUR,
+  DESCRIPTION_MAX_LENGTH,
+  ApiMethod,
+  ENTER_KEY_CODE,
 };

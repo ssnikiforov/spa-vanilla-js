@@ -1,4 +1,4 @@
-const DESCRIPTION_MAX_LENGTH = 140;
+import { DESCRIPTION_MAX_LENGTH } from '../const';
 
 const getLimitedText = (string, maxLength = DESCRIPTION_MAX_LENGTH) => {
   if (string.length < maxLength) {
