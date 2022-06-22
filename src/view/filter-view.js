@@ -31,12 +31,19 @@ export default class FilterView extends AbstractView {
 
   setFilterTypeChangeHandler = (callback) => {
     this._callback.filterTypeChange = callback;
-    this.element.querySelectorAll('a').forEach((anchor) => anchor.addEventListener('click', this.#filterTypeChangeHandler));
+    this.element.addEventListener('click', this.#filterTypeChangeHandler, true);
   };
 
   #filterTypeChangeHandler = (evt) => {
     evt.preventDefault();
-    const filterType = evt.target.getAttribute('href').slice(1);
+    const tagName = evt.target.tagName;
+
+    if (tagName !== 'SPAN' && tagName !== 'A') {
+      return;
+    }
+
+    const anchor = tagName === 'A' ? evt.target : evt.target.parentElement
+    const filterType = anchor.getAttribute('href').slice(1);
     const capitalizedFilterType = filterType.charAt(0).toUpperCase() + filterType.slice(1);
     this._callback.filterTypeChange(capitalizedFilterType);
   };

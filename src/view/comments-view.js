@@ -42,7 +42,7 @@ const commentsTemplate = (state) => {
       >
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
             >${comments.length}</span></h3>
-        <ul class="film-details__comments-list">${comments.map(existingCommentCardTemplate)}</ul>
+        <ul class="film-details__comments-list">${comments.map(existingCommentCardTemplate).join('')}</ul>
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
           <label class="film-details__comment-label">
@@ -142,15 +142,17 @@ export default class CommentsView extends AbstractStatefulView {
   });
 
   #emojiPickerClickInnerHandler = (evt) => {
-    if (evt.target.tagName !== 'IMG') {
+    evt.preventDefault();
+
+    const target = evt.target;
+    const tagName = target.tagName;
+    if (tagName !== 'IMG' && tagName !== 'LABEL') {
       return;
     }
 
-    evt.preventDefault();
-    const emotion = evt.target.alt;
-    const targetEmojiInput = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
-
-    targetEmojiInput.checked = true;
+    const emotion = tagName === 'IMG' ? target.alt : target.getAttribute('for').split('-')[1];
+    const input = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
+    input.checked = true;
     this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
 
     this._setState({ emotion });
