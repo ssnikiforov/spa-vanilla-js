@@ -42,7 +42,7 @@ export default class FilterView extends AbstractView {
       return;
     }
 
-    const anchor = tagName === 'A' ? evt.target : evt.target.parentElement
+    const anchor = tagName === 'A' ? evt.target : evt.target.parentElement;
     const filterType = anchor.getAttribute('href').slice(1);
     const capitalizedFilterType = filterType.charAt(0).toUpperCase() + filterType.slice(1);
     this._callback.filterTypeChange(capitalizedFilterType);
