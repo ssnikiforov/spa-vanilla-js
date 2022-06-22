@@ -162,7 +162,7 @@ export default class CommentsView extends AbstractStatefulView {
     evt.preventDefault();
 
     this._setState({
-      comment: evt.target.value
+      comment: this.#newCommentInput.value,
     });
   };
 
