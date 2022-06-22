@@ -1,12 +1,5 @@
 import AbstractView from './view/abstract-view.js';
-
-/** @enum {string} Перечисление возможных позиций для отрисовки */
-const RenderPosition = {
-  BEFOREBEGIN: 'beforebegin',
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend',
-};
+import { RenderPosition } from '../const';
 
 /**
  * Функция для создания элемента на основе разметки

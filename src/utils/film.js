@@ -1,8 +1,6 @@
 import dayjs from 'dayjs';
-import { DayDiffs, ProfileRatings } from '../const';
+import { DayDiffs, MINUTES_IN_HOUR, ProfileRatings } from '../const';
 import { getTwoMaxValuesWithIdsFromMap } from './common';
-
-const MINUTES_IN_HOUR = 60;
 
 const humanizeReleaseDate = (date, isFullFormat = false) => isFullFormat ? dayjs(date).format('D MMMM YYYY') : dayjs(date).format('YYYY');
 

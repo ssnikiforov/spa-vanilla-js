@@ -52,15 +52,19 @@ export default class FilmPresenter {
     document.body.classList.remove('hide-overflow');
     remove(this.#popupComponent);
     remove(this.#commentsComponent);
+    this.#popupComponent = null;
+    this.#commentsModel = null;
   };
 
   setSavingFilm = () => {
     this.#filmCardComponent.updateElement({
       isSaving: true,
     });
-    this.#popupComponent.updateElement({
-      isSaving: true,
-    });
+    if (this.#popupComponent) {
+      this.#popupComponent.updateElement({
+        isSaving: true,
+      });
+    }
   };
 
   setSavingFilmAborting = () => {
@@ -82,6 +86,10 @@ export default class FilmPresenter {
   };
 
   #renderPopup = () => {
+    this.#changeData(
+      UserAction.OPEN_POPUP,
+    );
+
     let popupComponent = new PopupView(this.#film.filmInfo, this.#film.userDetails);
 
     if (!this.#commentsModel) {

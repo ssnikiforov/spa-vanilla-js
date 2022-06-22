@@ -228,11 +228,15 @@ export default class BoardPresenter {
     this.#renderExtra();
   };
 
-  #clearFilmsList = () => {
+  #destroyPopup = () => {
     const filmPresentersMaps = Object.values(this.#filmPresenters);
     filmPresentersMaps.forEach((filmPresentersMap) => {
       filmPresentersMap.forEach((filmPresenter) => filmPresenter.destroyPopup());
     });
+  };
+
+  #clearFilmsList = () => {
+    this.#destroyPopup();
 
     this.#filmPresenters = {};
     remove(this.#filmsContainerComponent);
@@ -267,9 +271,9 @@ export default class BoardPresenter {
     this.#clearExtra();
   };
 
-  #handleViewAction = async (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType = null, update = null) => {
     this.#uiBlocker.block();
-    const filmPresenters = this.#filmPresenters[parseInt(update.id, 10)];
+    const filmPresenters = update ? this.#filmPresenters[parseInt(update.id, 10)] : null;
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
@@ -284,6 +288,9 @@ export default class BoardPresenter {
       case UserAction.UPDATE_FILM_COMMENTS:
         this.#reRenderFilm(update);
         this.#reRenderMostCommentedExtraFilms();
+        break;
+      case UserAction.OPEN_POPUP:
+        this.#destroyPopup();
         break;
       default:
         break;
