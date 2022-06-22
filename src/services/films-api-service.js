@@ -7,7 +7,7 @@ const Method = {
 
 export default class FilmsApiService extends ApiService {
   get films() {
-    return this._load({url: 'movies'})
+    return this._load({ url: 'movies' })
       .then(ApiService.parseResponse);
   }
 
@@ -16,17 +16,15 @@ export default class FilmsApiService extends ApiService {
       url: `movies/${film.id}`,
       method: Method.PUT,
       body: JSON.stringify(this.#adaptToServer(film)),
-      headers: new Headers({'Content-Type': 'application/json'}),
+      headers: new Headers({ 'Content-Type': 'application/json' }),
     });
 
-    const parsedResponse = await ApiService.parseResponse(response);
-
-    return parsedResponse;
+    return await ApiService.parseResponse(response);
   };
 
   #adaptToServer = (film) => {
-    const {id, comments} = film;
-    const { ageRating, alternativeTitle, release, totalRating, ...restFilmInfo} = film.filmInfo;
+    const { id, comments } = film;
+    const { ageRating, alternativeTitle, release, totalRating, ...restFilmInfo } = film.filmInfo;
     const { alreadyWatched, watchingDate, ...restUserDetails } = film.userDetails;
 
     return {

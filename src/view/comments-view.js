@@ -2,14 +2,14 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeCommentDate } from '../utils/film';
 import { Emojis, UserAction } from '../const';
 import he from 'he';
-import { nanoid } from 'nanoid';
 
 const ENTER_KEY_CODE = 13;
 
 const selectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
 
-const commentsTemplate = (commentsObj) => {
-  const comments = Object.values(commentsObj).filter((value) => typeof value === 'object');
+const commentsTemplate = (state) => {
+  const comments = Object.values(state).filter((value) => typeof value === 'object');
+  const { isDisabled, isDeleting, isSaving } = state;
   const existingCommentCardTemplate = ({ id, author, comment, date, emotion }) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
@@ -19,7 +19,11 @@ const commentsTemplate = (commentsObj) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${humanizeCommentDate(date)}</span>
-        <button class="film-details__comment-delete" data-comment-id="${id}">Delete</button>
+        <button
+            class="film-details__comment-delete"
+            data-comment-id="${id}"
+            ${isDisabled ? 'disabled' : ''}
+        >${isDeleting ? 'Deleting...' : 'Delete'}</button>
       </p>
     </div>
   </li>`;
@@ -30,27 +34,38 @@ const commentsTemplate = (commentsObj) => {
         <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="${emoji}">
       </label>`
   ).join('');
-
   return `<section class="film-details__comments-wrap">
     <form class="film-details__inner" action="" method="get">
-      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
-          >${comments.length}</span></h3>
-      <ul class="film-details__comments-list">${comments.map(existingCommentCardTemplate)}</ul>
-      <div class="film-details__new-comment">
-        <div class="film-details__add-emoji-label"></div>
-        <label class="film-details__comment-label">
-          <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
-        </label>
-        <div class="film-details__emoji-list">${newCommentEmojisTemplate()}</div>
-      </div>
+      <fieldset
+        style="margin: 0; padding: 0; border: 0;"
+        ${isSaving ? 'disabled' : ''}
+      >
+        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
+            >${comments.length}</span></h3>
+        <ul class="film-details__comments-list">${comments.map(existingCommentCardTemplate).join('')}</ul>
+        <div class="film-details__new-comment">
+          <div class="film-details__add-emoji-label"></div>
+          <label class="film-details__comment-label">
+            <textarea
+              class="film-details__comment-input"
+              placeholder="Select reaction below and write comment here"
+              name="comment"
+              ${isSaving ? 'disabled' : ''}
+            ></textarea>
+          </label>
+          <div class="film-details__emoji-list">${newCommentEmojisTemplate()}</div>
+        </div>
+      </fieldset>
     </form>
   </section>`;
 };
 
 export default class CommentsView extends AbstractStatefulView {
-  constructor(comments) {
+  constructor(comments, { comment = null, emotion = null } = {}) {
     super();
     this._state = this.#convertCommentsToState(comments);
+
+    this.setCommentAndEmotion(comment, emotion);
     this.#setInnerHandlers();
   }
 
@@ -82,6 +97,21 @@ export default class CommentsView extends AbstractStatefulView {
     return this.#form.querySelectorAll('.film-details__comment-delete');
   }
 
+  // put comment's text and/or emotion from previous state of replaced component
+  setCommentAndEmotion = (comment, emotion) => {
+    if (comment) {
+      this._setState({ comment });
+      this.#newCommentInput.value = he.encode(comment);
+    }
+
+    if (emotion) {
+      this._setState({ emotion });
+      this.#selectedEmojiWrapper.innerHTML = emotion ? selectedEmojiForNewCommentTemplate(emotion) : '';
+      const emojiFromEmojiList = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
+      emojiFromEmojiList.checked = true;
+    }
+  };
+
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.#form.addEventListener('keydown', this.#formSubmitHandler);
@@ -101,42 +131,40 @@ export default class CommentsView extends AbstractStatefulView {
     ...comments,
     comment: '',
     emotion: '',
+    isDisabled: false,
+    isSaving: false,
+    isDeleting: false,
   });
 
-  #convertStateToNewComment = (state) => {
-    const newComment = {
-      id: nanoid(),
-      author: '',
-      comment: state.comment,
-      date: (new Date()).toISOString(),
-      emotion: state.emotion,
-    };
-
-    this._setState({ ...state, newComment, comment: '', emotion: '' });
-
-    return newComment;
-  };
+  #convertStateToNewComment = (state) => ({
+    comment: state.comment,
+    emotion: state.emotion,
+  });
 
   #emojiPickerClickInnerHandler = (evt) => {
-    if (evt.target.tagName !== 'IMG') {
+    evt.preventDefault();
+
+    const target = evt.target;
+    const tagName = target.tagName;
+    if (tagName !== 'IMG' && tagName !== 'LABEL') {
       return;
     }
 
-    evt.preventDefault();
-    const emotion = evt.target.alt;
-    const targetEmojiInput = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
+    const emotion = tagName === 'IMG' ? target.alt : target.getAttribute('for').split('-')[1];
+    const input = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
 
-    targetEmojiInput.checked = true;
-    this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
-
-    this._setState({ emotion });
+    if (input) {
+      input.checked = true;
+      this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
+      this._setState({ emotion });
+    }
   };
 
   #commentTextInputInnerHandler = (evt) => {
     evt.preventDefault();
 
     this._setState({
-      comment: evt.target.value
+      comment: this.#newCommentInput.value,
     });
   };
 
@@ -158,16 +186,13 @@ export default class CommentsView extends AbstractStatefulView {
   #deleteCommentClickHandler = (evt) => {
     evt.preventDefault();
 
-    const deletedCommentId = evt.target.dataset.commentId;
-    const deletedComment = Object.values(this._state).find(({ id }) => id === deletedCommentId);
-
-    this._setState({
-      ...Object.values(this._state).filter((value) => typeof value === 'object')
-        .filter((comment) => comment.id !== deletedCommentId),
-      comment: this._state.comment,
-      emotion: this._state.emotion,
+    const commentId = evt.target.dataset?.commentId?.toString();
+    this._callback.deleteComment(UserAction.DELETE_COMMENT, {
+      commentId, previousState: { // preventing loss of user data for better UX
+        comment: this._state.comment,
+        emotion: this._state.emotion,
+      }
     });
-    this._callback.deleteComment(UserAction.DELETE_COMMENT, deletedComment);
   };
 
   #setInnerHandlers = () => {

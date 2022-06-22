@@ -7,9 +7,10 @@ import LoadingView from '../view/loading-view';
 import ProfileRatingView from '../view/profile-rating-view';
 import SortView from '../view/sort-view';
 import FooterCounterView from '../view/footer-counter-view';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { remove, render, replace } from '../framework/render';
 import { getTwoExtraFilmsIds, sortFilmsDateDown, sortFilmsRatingDown } from '../utils/film';
-import { ExtraFilmsSectionNames, FilterType, SortType, UpdateType, UserAction } from '../const';
+import { ExtraFilmsSectionNames, FilterType, SortType, UiBlockerTimeLimit, UpdateType, UserAction } from '../const';
 import { filter } from '../utils/filter';
 
 const FILMS_COUNT_PER_STEP = 5;
@@ -35,19 +36,20 @@ export default class BoardPresenter {
   #changeDataHandler = null;
 
   #isLoading = true;
+  #uiBlocker = new UiBlocker(UiBlockerTimeLimit.LOWER_LIMIT, UiBlockerTimeLimit.UPPER_LIMIT);
 
   constructor(filmsModel, filterModel) {
     this.#filmsModel = filmsModel;
     this.#filterModel = filterModel;
 
-    this.#filmsModel.addObserver(this.#handleModelEvent);
-    this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#filmsModel.addObserver(this.#handleFilmsModelEvent);
+    this.#filterModel.addObserver(this.#handleFilmsModelEvent);
   }
 
   get films() {
     this.#filterType = this.#filterModel.filter;
     const films = this.#filmsModel.films;
-    const filteredFilms = filter[this.#filterType](films);
+    const filteredFilms = [...filter[this.#filterType](films)];
 
     switch (this.#currentSortType) {
       case SortType.DATE_DOWN:
@@ -265,21 +267,35 @@ export default class BoardPresenter {
     this.#clearExtra();
   };
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+    const filmPresenters = this.#filmPresenters[parseInt(update.id, 10)];
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmsModel.updateFilm(updateType, update);
+        filmPresenters.forEach((filmPresenter) => filmPresenter.setSavingFilm());
+
+        try {
+          await this.#filmsModel.updateFilm(updateType, update);
+        } catch (err) {
+          filmPresenters.forEach((filmPresenter) => filmPresenter.setSavingFilmAborting());
+        }
+        break;
+      case UserAction.UPDATE_FILM_COMMENTS:
+        this.#reRenderFilm(update);
+        this.#reRenderMostCommentedExtraFilms();
         break;
       default:
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
-  #handleModelEvent = (updateType, data) => {
+  #handleFilmsModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
         this.#reRenderFilm(data);
-        this.#reRenderMostCommentedExtraFilms();
         this.#renderProfileRating();
         break;
       case UpdateType.MAJOR:

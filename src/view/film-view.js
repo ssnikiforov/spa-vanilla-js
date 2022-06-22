@@ -1,8 +1,8 @@
-import AbstractView from '../framework/view/abstract-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 import { getLimitedText } from '../utils/common';
 
-const filmTemplate = (film, userDetails) => {
+const filmTemplate = (film, userDetails, { isSaving }) => {
   const {
     title,
     totalRating,
@@ -34,17 +34,24 @@ const filmTemplate = (film, userDetails) => {
     <div class="film-card__controls">
       <button
         class="film-card__controls-item film-card__controls-item--add-to-watchlist ${getActiveClassNameModifier(watchlist)}"
-        type="button">Add to watchlist</button>
+        type="button"
+        ${isSaving ? 'disabled' : ''}
+      >Add to watchlist</button>
       <button
         class="film-card__controls-item film-card__controls-item--mark-as-watched ${getActiveClassNameModifier(alreadyWatched)}"
-        type="button">Mark as watched</button>
-      <button class="film-card__controls-item film-card__controls-item--favorite ${getActiveClassNameModifier(favorite)}"
-      type="button">Mark as favorite</button>
+        type="button"
+        ${isSaving ? 'disabled' : ''}
+      >Mark as watched</button>
+      <button
+        class="film-card__controls-item film-card__controls-item--favorite ${getActiveClassNameModifier(favorite)}"
+        type="button"
+        ${isSaving ? 'disabled' : ''}
+      >Mark as favorite</button>
     </div>
   </article>`;
 };
 
-export default class FilmView extends AbstractView {
+export default class FilmView extends AbstractStatefulView {
   #film = null;
   #userDetails = null;
 
@@ -52,10 +59,13 @@ export default class FilmView extends AbstractView {
     super();
     this.#film = film;
     this.#userDetails = userDetails;
+    this._state = {
+      isSaving: false,
+    };
   }
 
   get template() {
-    return filmTemplate(this.#film, this.#userDetails);
+    return filmTemplate(this.#film, this.#userDetails, this._state);
   }
 
   get filmCardLink() {
@@ -83,6 +93,10 @@ export default class FilmView extends AbstractView {
     this._callback.favoriteToggle = callback;
     const button = this.element.querySelector('.film-card__controls-item--favorite');
     button.addEventListener('click', this.#favoriteToggleHandler);
+  };
+
+  _restoreHandlers = () => {
+
   };
 
   #openPopupHandler = (evt) => {

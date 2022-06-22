@@ -90,6 +90,7 @@ const SortType = {
 
 const UserAction = {
   UPDATE_FILM: 'UPDATE_FILM',
+  UPDATE_FILM_COMMENTS: 'UPDATE_FILM_COMMENTS',
   ADD_COMMENT: 'ADD_COMMENT',
   DELETE_COMMENT: 'DELETE_COMMENT',
 };
@@ -98,6 +99,16 @@ const UpdateType = {
   PATCH: 'PATCH',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+};
+
+const ApiServicesConfig = {
+  AUTHORIZATION: 'Basic njkanj421213b112bhjbaj131341nk',
+  END_POINT: 'https://17.ecmascript.pages.academy/cinemaddict',
+};
+
+const UiBlockerTimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
 };
 
 export {
@@ -112,4 +123,6 @@ export {
   SortType,
   UserAction,
   UpdateType,
+  ApiServicesConfig,
+  UiBlockerTimeLimit,
 };
