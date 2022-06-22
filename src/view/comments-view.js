@@ -152,10 +152,12 @@ export default class CommentsView extends AbstractStatefulView {
 
     const emotion = tagName === 'IMG' ? target.alt : target.getAttribute('for').split('-')[1];
     const input = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
-    input.checked = true;
-    this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
 
-    this._setState({ emotion });
+    if (input) {
+      input.checked = true;
+      this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
+      this._setState({ emotion });
+    }
   };
 
   #commentTextInputInnerHandler = (evt) => {
@@ -184,7 +186,7 @@ export default class CommentsView extends AbstractStatefulView {
   #deleteCommentClickHandler = (evt) => {
     evt.preventDefault();
 
-    const commentId = evt.target.dataset.commentId.toString();
+    const commentId = evt.target.dataset?.commentId?.toString();
     this._callback.deleteComment(UserAction.DELETE_COMMENT, {
       commentId, previousState: { // preventing loss of user data for better UX
         comment: this._state.comment,
