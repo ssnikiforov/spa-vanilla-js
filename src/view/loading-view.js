@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createNoTaskTemplate = () => `<section class="films">
+const getNoTaskTemplate = () => `<section class="films">
     <section class="films-list">
       <h2 class="films-list__title">Loading...</h2>
     </section>
@@ -8,6 +8,6 @@ const createNoTaskTemplate = () => `<section class="films">
 
 export default class LoadingView extends AbstractView {
   get template() {
-    return createNoTaskTemplate();
+    return getNoTaskTemplate();
   }
 }

@@ -3,7 +3,7 @@ import { SortType } from '../const';
 
 const getActiveClassNameModifier = () => 'sort__button--active';
 
-const sortTemplate = (currentSortType) =>
+const getSortTemplate = (currentSortType) =>
   `<ul class="sort">
     <li><a href="#" class="sort__button ${currentSortType === SortType.DEFAULT ? getActiveClassNameModifier() : ''}"
         data-sort-type="${SortType.DEFAULT}">Sort by default</a></li>
@@ -22,7 +22,7 @@ export default class SortView extends AbstractView {
   }
 
   get template() {
-    return sortTemplate(this.#currentSortType);
+    return getSortTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {

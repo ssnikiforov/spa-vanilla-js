@@ -2,7 +2,7 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { humanizeReleaseDate, humanizeRuntime } from '../utils/film';
 import { getLimitedText } from '../utils/common';
 
-const filmTemplate = (film, userDetails, { isSaving }) => {
+const getFilmTemplate = (film, userDetails, { isSaving }) => {
   const {
     title,
     totalRating,
@@ -65,7 +65,7 @@ export default class FilmView extends AbstractStatefulView {
   }
 
   get template() {
-    return filmTemplate(this.#film, this.#userDetails, this._state);
+    return getFilmTemplate(this.#film, this.#userDetails, this._state);
   }
 
   get filmCardLink() {

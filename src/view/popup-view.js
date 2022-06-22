@@ -29,7 +29,7 @@ const getControlsHtml = ({ watchlist, alreadyWatched, favorite }, isSaving) => {
   </section>`;
 };
 
-const popupTemplate = (film, userDetails, { isSaving }) => {
+const getPopupTemplate = (film, userDetails, { isSaving }) => {
   const getFilmDetailsHtml = ({
     title,
     alternativeTitle,
@@ -125,7 +125,7 @@ export default class PopupView extends AbstractStatefulView {
   }
 
   get template() {
-    return popupTemplate(this.#film, this.#userDetails, this._state);
+    return getPopupTemplate(this.#film, this.#userDetails, this._state);
   }
 
   get commentsEl() {

@@ -8,7 +8,7 @@ const NoFilmsTextType = {
   [FilterType.FAVORITES]: 'There are no favorite movies now',
 };
 
-const noFilmTemplate = (filterType) => `<section class="films">
+const getNoFilmTemplate = (filterType) => `<section class="films">
       <h2 class="films-list__title">${NoFilmsTextType[filterType]}</h2>
   </section>`;
 
@@ -21,6 +21,6 @@ export default class NoFilmView extends AbstractView {
   }
 
   get template() {
-    return noFilmTemplate(this.#filterType);
+    return getNoFilmTemplate(this.#filterType);
   }
 }

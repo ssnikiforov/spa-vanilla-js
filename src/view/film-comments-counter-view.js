@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { pluralizePhrase } from '../utils/common';
 
-const filmCommentsCounterTemplate = (count) => `<span class="film-card__comments">${pluralizePhrase('comment', count)}</span>`;
+const getFilmCommentsCounterTemplate = (count) => `<span class="film-card__comments">${pluralizePhrase('comment', count)}</span>`;
 
 export default class FilmCommentsCounterView extends AbstractView {
   #count = null;
@@ -12,6 +12,6 @@ export default class FilmCommentsCounterView extends AbstractView {
   }
 
   get template() {
-    return filmCommentsCounterTemplate(this.#count);
+    return getFilmCommentsCounterTemplate(this.#count);
   }
 }

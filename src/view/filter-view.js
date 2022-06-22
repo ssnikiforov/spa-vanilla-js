@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view';
 import { FilterType } from '../const';
 
-const createFilterItem = (filter, currentFilterType) => {
+const getFilterItem = (filter, currentFilterType) => {
   const { type, name, count } = filter;
 
   const activeClassName = type === currentFilterType ? 'main-navigation__item--active' : '';
@@ -13,7 +13,7 @@ const createFilterItem = (filter, currentFilterType) => {
             class="main-navigation__item ${activeClassName}">${name}${span}</a>`;
 };
 
-const filterTemplate = (filters, currentFilterType) => `<nav class="main-navigation">${filters.map((filter) => createFilterItem(filter, currentFilterType)).join('')}</nav>`;
+const getFilterTemplate = (filters, currentFilterType) => `<nav class="main-navigation">${filters.map((filter) => getFilterItem(filter, currentFilterType)).join('')}</nav>`;
 
 export default class FilterView extends AbstractView {
   #filters = null;
@@ -26,7 +26,7 @@ export default class FilterView extends AbstractView {
   }
 
   get template() {
-    return filterTemplate(this.#filters, this.#currentFilter);
+    return getFilterTemplate(this.#filters, this.#currentFilter);
   }
 
   setFilterTypeChangeHandler = (callback) => {

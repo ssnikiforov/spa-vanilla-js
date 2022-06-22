@@ -3,12 +3,12 @@ import { humanizeCommentDate } from '../utils/film';
 import { Emojis, ENTER_KEY_CODE, UserAction } from '../const';
 import he from 'he';
 
-const selectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
+const getSelectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`;
 
-const commentsTemplate = (state) => {
+const getCommentsTemplate = (state) => {
   const comments = Object.values(state).filter((value) => typeof value === 'object');
   const { isDisabled, isDeleting, isSaving } = state;
-  const existingCommentCardTemplate = ({ id, author, comment, date, emotion }) => `<li class="film-details__comment">
+  const getExistingCommentCardTemplate = ({ id, author, comment, date, emotion }) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
     </span>
@@ -26,7 +26,7 @@ const commentsTemplate = (state) => {
     </div>
   </li>`;
 
-  const newCommentEmojisTemplate = () => Object.values(Emojis).map((emoji) => `<input class="film-details__emoji-item visually-hidden"
+  const getNewCommentEmojisTemplate = () => Object.values(Emojis).map((emoji) => `<input class="film-details__emoji-item visually-hidden"
             name="comment-emoji" type="radio" id="emoji-${emoji}" value="${emoji}">
       <label class="film-details__emoji-label" for="emoji-${emoji}">
         <img src="./images/emoji/${emoji}.png" width="30" height="30" alt="${emoji}">
@@ -40,7 +40,7 @@ const commentsTemplate = (state) => {
       >
         <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
             >${comments.length}</span></h3>
-        <ul class="film-details__comments-list">${comments.map(existingCommentCardTemplate).join('')}</ul>
+        <ul class="film-details__comments-list">${comments.map(getExistingCommentCardTemplate).join('')}</ul>
         <div class="film-details__new-comment">
           <div class="film-details__add-emoji-label"></div>
           <label class="film-details__comment-label">
@@ -51,7 +51,7 @@ const commentsTemplate = (state) => {
               ${isSaving ? 'disabled' : ''}
             ></textarea>
           </label>
-          <div class="film-details__emoji-list">${newCommentEmojisTemplate()}</div>
+          <div class="film-details__emoji-list">${getNewCommentEmojisTemplate()}</div>
         </div>
       </fieldset>
     </form>
@@ -68,7 +68,7 @@ export default class CommentsView extends AbstractStatefulView {
   }
 
   get template() {
-    return commentsTemplate(this._state);
+    return getCommentsTemplate(this._state);
   }
 
   get #form() {
@@ -104,7 +104,7 @@ export default class CommentsView extends AbstractStatefulView {
 
     if (emotion) {
       this._setState({ emotion });
-      this.#selectedEmojiWrapper.innerHTML = emotion ? selectedEmojiForNewCommentTemplate(emotion) : '';
+      this.#selectedEmojiWrapper.innerHTML = emotion ? getSelectedEmojiForNewCommentTemplate(emotion) : '';
       const emojiFromEmojiList = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
       emojiFromEmojiList.checked = true;
     }
@@ -153,7 +153,7 @@ export default class CommentsView extends AbstractStatefulView {
 
     if (input) {
       input.checked = true;
-      this.#selectedEmojiWrapper.innerHTML = selectedEmojiForNewCommentTemplate(emotion);
+      this.#selectedEmojiWrapper.innerHTML = getSelectedEmojiForNewCommentTemplate(emotion);
       this._setState({ emotion });
     }
   };
