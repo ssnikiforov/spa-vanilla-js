@@ -198,7 +198,7 @@ export default class FilmPresenter {
 
     switch (userAction) {
       case UserAction.ADD_COMMENT:
-        this.#commentsComponent.updateElement({
+        this.#commentsComponent.update({
           isDisabled: true,
           isSaving: true,
         });
@@ -207,32 +207,20 @@ export default class FilmPresenter {
           await this.#commentsModel.addComment(userAction, update);
         } catch (err) {
           const resetFormState = () => {
-            this.#commentsComponent.updateElement({
+            this.#commentsComponent.update({
               isDisabled: false,
               isSaving: false,
             });
           };
           this.#commentsComponent.shake(resetFormState);
-          this.#commentsComponent.setCommentAndEmotion(update['comment'], update['emotion']);
         }
         break;
 
       case UserAction.DELETE_COMMENT:
-        this.#commentsComponent.updateElement({
-          isDisabled: true,
-          isDeleting: true,
-        });
-
         try {
           await this.#commentsModel.deleteComment(userAction, update);
         } catch (err) {
-          const resetDeleteButtonState = () => {
-            this.#commentsComponent.updateElement({
-              isDisabled: false,
-              isDeleting: false,
-            });
-          };
-          this.#commentsComponent.shake(resetDeleteButtonState);
+          this.#commentsComponent.shake(this.#commentsComponent.resetDeleteButtons);
         }
         break;
       default:

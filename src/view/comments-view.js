@@ -7,7 +7,7 @@ const getSelectedEmojiForNewCommentTemplate = (emotion) => `<img src="./images/e
 
 const getCommentsTemplate = (state) => {
   const comments = Object.values(state).filter((value) => typeof value === 'object');
-  const { isDisabled, isDeleting, isSaving } = state;
+  const { isDisabled, isSaving } = state;
   const getExistingCommentCardTemplate = ({ id, author, comment, date, emotion }) => `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
       <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
@@ -21,7 +21,7 @@ const getCommentsTemplate = (state) => {
             class="film-details__comment-delete"
             data-comment-id="${id}"
             ${isDisabled ? 'disabled' : ''}
-        >${isDeleting ? 'Deleting...' : 'Delete'}</button>
+        >Delete</button>
       </p>
     </div>
   </li>`;
@@ -34,26 +34,21 @@ const getCommentsTemplate = (state) => {
   ).join('');
   return `<section class="film-details__comments-wrap">
     <form class="film-details__inner" action="" method="get">
-      <fieldset
-        style="margin: 0; padding: 0; border: 0;"
-        ${isSaving ? 'disabled' : ''}
-      >
-        <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
-            >${comments.length}</span></h3>
-        <ul class="film-details__comments-list">${comments.map(getExistingCommentCardTemplate).join('')}</ul>
-        <div class="film-details__new-comment">
-          <div class="film-details__add-emoji-label"></div>
-          <label class="film-details__comment-label">
-            <textarea
-              class="film-details__comment-input"
-              placeholder="Select reaction below and write comment here"
-              name="comment"
-              ${isSaving ? 'disabled' : ''}
-            ></textarea>
-          </label>
-          <div class="film-details__emoji-list">${getNewCommentEmojisTemplate()}</div>
-        </div>
-      </fieldset>
+      <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count"
+          >${comments.length}</span></h3>
+      <ul class="film-details__comments-list">${comments.map(getExistingCommentCardTemplate).join('')}</ul>
+      <div class="film-details__new-comment">
+        <div class="film-details__add-emoji-label"></div>
+        <label class="film-details__comment-label">
+          <textarea
+            class="film-details__comment-input"
+            placeholder="Select reaction below and write comment here"
+            name="comment"
+            ${isSaving ? 'disabled' : ''}
+          ></textarea>
+        </label>
+        <div class="film-details__emoji-list">${getNewCommentEmojisTemplate()}</div>
+      </div>
     </form>
   </section>`;
 };
@@ -63,7 +58,7 @@ export default class CommentsView extends AbstractStatefulView {
     super();
     this._state = this.#convertCommentsToState(comments);
 
-    this.setCommentAndEmotion(comment, emotion);
+    this.#setCommentAndEmotion(comment, emotion); // for delete action
     this.#setInnerHandlers();
   }
 
@@ -95,19 +90,20 @@ export default class CommentsView extends AbstractStatefulView {
     return this.#form.querySelectorAll('.film-details__comment-delete');
   }
 
-  // put comment's text and/or emotion from previous state of replaced component
-  setCommentAndEmotion = (comment, emotion) => {
-    if (comment) {
-      this._setState({ comment });
-      this.#newCommentInput.value = he.encode(comment);
+  update = (update) => {
+    if (!update) {
+      return;
     }
 
-    if (emotion) {
-      this._setState({ emotion });
-      this.#selectedEmojiWrapper.innerHTML = emotion ? getSelectedEmojiForNewCommentTemplate(emotion) : '';
-      const emojiFromEmojiList = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
-      emojiFromEmojiList.checked = true;
-    }
+    this.updateElement(update);
+    this.#setCommentAndEmotion(this._state.comment, this._state.emotion);
+  };
+
+  resetDeleteButtons = () => {
+    this.#deleteCommentButtons.forEach((button) => {
+      button.disabled = false;
+      button.textContent = 'Delete';
+    });
   };
 
   setFormSubmitHandler = (callback) => {
@@ -131,13 +127,27 @@ export default class CommentsView extends AbstractStatefulView {
     emotion: '',
     isDisabled: false,
     isSaving: false,
-    isDeleting: false,
   });
 
   #convertStateToNewComment = (state) => ({
     comment: state.comment,
     emotion: state.emotion,
   });
+
+  // put comment's text and/or emotion from previous state of replaced component
+  #setCommentAndEmotion = (comment, emotion) => {
+    if (comment) {
+      this._setState({ comment });
+      this.#newCommentInput.innerText = he.encode(comment);
+    }
+
+    if (emotion) {
+      this._setState({ emotion });
+      this.#selectedEmojiWrapper.innerHTML = emotion ? getSelectedEmojiForNewCommentTemplate(emotion) : '';
+      const emojiFromEmojiList = this.#emojisList.querySelector(`input[id=emoji-${emotion}]`);
+      emojiFromEmojiList.checked = true;
+    }
+  };
 
   #emojiPickerClickInnerHandler = (evt) => {
     evt.preventDefault();
@@ -184,7 +194,12 @@ export default class CommentsView extends AbstractStatefulView {
   #deleteCommentClickHandler = (evt) => {
     evt.preventDefault();
 
-    const commentId = evt.target.dataset?.commentId?.toString();
+    const target = evt.target;
+    const commentId = target.dataset?.commentId?.toString();
+
+    target.textContent = 'Deleting...';
+    target.disabled = true;
+
     this._callback.deleteComment(UserAction.DELETE_COMMENT, {
       commentId, previousState: { // preventing loss of user data for better UX
         comment: this._state.comment,
