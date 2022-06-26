@@ -1,52 +1,32 @@
 # Проект «Киноман»
 
-* Студент: [Stepan Nikiforov](https://up.htmlacademy.ru/ecmascript/17/user/165513).
-* Наставник: [Иван Кривонос](https://htmlacademy.ru/profile/id1311037).
+Проект разрабатывался в рамках
+прохождения [курса по архитектуре приложений](https://htmlacademy.ru/intensive/ecmascript) в HTML Academy.
 
----
+Здесь нет React и Typescript, цель у курса и у проекта была другая.
 
-_Не удаляйте и не изменяйте папки и файлы:_
-_`.editorconfig`, `.gitattributes`._
+### Характеристики проекта
 
----
+#### Основные характеристики проекта
 
-### Памятка
+- Тип приложения: Single page application (SPA)
+- Язык: ванильный JS
+- Сборка: Webpack
 
-#### 1. Зарегистрируйтесь на Гитхабе
+#### Архитектура и паттерны
 
-Если у вас ещё нет аккаунта на [github.com](https://github.com/join), скорее зарегистрируйтесь.
+- Архитектура: OOP
+- Паттерны: MVP, Observer, Adapter, Singleton
 
-#### 2. Создайте форк
+#### Что реализовано
 
-Откройте репозиторий и нажмите кнопку «Fork» в правом верхнем углу. Репозиторий из Академии будет скопирован в ваш аккаунт.
+- Классовые компоненты по паттерну MVP
+- Двусторонние датабиндинги (используя коллбэки + Observer)
+- Фильтры, сортировка, работа с локальным стейтом, пошаговый рендеринг карточек на доске ("Show more")
+- Взаимодействие с сервером, отправка данных из формы, обратная связь с пользователем при сетевом взаимодействии (
+  отправка данных, неудачная отправка данных)
 
-<img width="769" alt="Press 'Fork'" src="https://cloud.githubusercontent.com/assets/259739/20264045/a1ddbf40-aa7a-11e6-9a1a-724a1c0123c8.png">
+### Использование
 
-Получится вот так:
-
-<img width="769" alt="Forked" src="https://cloud.githubusercontent.com/assets/259739/20264122/f63219a6-aa7a-11e6-945a-89818fc7c014.png">
-
-#### 3. Клонируйте репозиторий на свой компьютер
-
-Будьте внимательны: нужно клонировать свой репозиторий (форк), а не репозиторий Академии. Также обратите внимание, что клонировать репозиторий нужно через SSH, а не через HTTPS. Нажмите зелёную кнопку в правой части экрана, чтобы скопировать SSH-адрес вашего репозитория:
-
-<img width="769" alt="SSH" src="https://cloud.githubusercontent.com/assets/259739/20264180/42704126-aa7b-11e6-9ab4-73372b812a53.png">
-
-Клонировать репозиторий можно так:
-
-```
-git clone SSH-адрес_вашего_форка
-```
-
-Команда клонирует репозиторий на ваш компьютер и подготовит всё необходимое для старта работы.
-
-#### 4. Начинайте обучение!
-
----
-
-<a href="https://htmlacademy.ru/intensive/ecmascript"><img align="left" width="50" height="50" title="HTML Academy" src="https://up.htmlacademy.ru/static/img/intensive/ecmascript/logo-for-github.svg"></a>
-
-Репозиторий создан для обучения на профессиональном курсе «[JavaScript. Архитектура клиентских приложений](https://htmlacademy.ru/intensive/ecmascript)» от [HTML Academy](https://htmlacademy.ru).
-
-[check-image]: https://github.com/htmlacademy-ecmascript/165513-cinemaddict-17/workflows/Project%20check/badge.svg?branch=master
-[check-url]: https://github.com/htmlacademy-ecmascript/165513-cinemaddict-17/actions
+- Запуск проекта: ```npm start```
+- Ссылка на приложение в браузере: ```http://localhost:8080```
